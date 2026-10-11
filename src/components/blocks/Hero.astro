@@ -1,0 +1,215 @@
+---
+// Blok „Hero”: wideo na pełen ekran, H1 na dole po lewej (układ jak orlen.pl).
+// Kadr (poster) jest zwykłym obrazem, więc ładuje się od razu i to on liczy się
+// do LCP. Wideo dociąga skrypt po załadowaniu strony; przy „ogranicz ruch”
+// i trybie oszczędzania danych zostaje sam kadr.
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  heading: string;
+  text?: string;
+  primaryCta?: { label: string; href: string };
+  secondaryCta?: { label: string; href: string };
+  video?: string;
+  poster: { src: ImageMetadata; alt: string };
+}
+
+const { heading, text, primaryCta, secondaryCta, video, poster } = Astro.props;
+---
+
+<section class="hero" aria-labelledby="hero-heading">
+  <div class="hero__media" aria-hidden="true">
+    <Image
+      class="hero__poster"
+      src={poster.src}
+      alt=""
+      widths={[640, 960]}
+      sizes="100vw"
+      loading="eager"
+      fetchpriority="high"
+    />
+    {video && <video class="hero__video" data-src={video} muted loop playsinline preload="none" data-hero-video />}
+  </div>
+
+  <div class="container hero__content">
+    <h1 id="hero-heading" class="hero__title">{heading}</h1>
+    {text && <p class="hero__text">{text}</p>}
+    <div class="hero__actions">
+      {primaryCta && <a class="btn btn--primary" href={primaryCta.href}>{primaryCta.label}</a>}
+      {secondaryCta && <a class="btn btn--ghost-light" href={secondaryCta.href}>{secondaryCta.label}</a>}
+    </div>
+  </div>
+
+  {
+    video && (
+      <button class="hero__toggle" type="button" aria-pressed="false" data-hero-toggle hidden>
+        <svg class="icon-pause" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+          <rect x="3" y="2" width="3.5" height="12" fill="currentColor" />
+          <rect x="9.5" y="2" width="3.5" height="12" fill="currentColor" />
+        </svg>
+        <svg class="icon-play" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M4 2l10 6-10 6z" fill="currentColor" />
+        </svg>
+        <span class="visually-hidden" data-hero-toggle-label>Zatrzymaj wideo w tle</span>
+      </button>
+    )
+  }
+</section>
+
+<script>
+  const video = document.querySelector<HTMLVideoElement>('[data-hero-video]');
+  const toggle = document.querySelector<HTMLButtonElement>('[data-hero-toggle]');
+  const label = document.querySelector<HTMLElement>('[data-hero-toggle-label]');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+
+  if (video && !reduce && !saveData) {
+    const start = () => {
+      video.src = video.dataset.src!;
+      video.play().then(
+        () => {
+          video.classList.add('is-playing');
+          if (toggle) toggle.hidden = false;
+        },
+        () => {},
+      );
+    };
+    if (document.readyState === 'complete') start();
+    else window.addEventListener('load', start, { once: true });
+
+    toggle?.addEventListener('click', () => {
+      const paused = !video.paused;
+      if (paused) video.pause();
+      else video.play();
+      toggle.setAttribute('aria-pressed', String(paused));
+      if (label) label.textContent = paused ? 'Odtwórz wideo w tle' : 'Zatrzymaj wideo w tle';
+    });
+  }
+</script>
+
+<style>
+  .hero {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    align-items: flex-end;
+    min-height: max(640px, 100svh);
+    color: #fff;
+    background: var(--c-navy-900);
+    overflow: hidden;
+  }
+
+  .hero__media {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .hero__poster,
+  .hero__video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero__video {
+    opacity: 0;
+    transition: opacity 0.8s var(--ease);
+  }
+
+  .hero__video.is-playing {
+    opacity: 1;
+  }
+
+  /* Przyciemnienie: mocne od dołu i z lewej, gdzie stoi tekst.
+     Najjaśniejszy piksel pod tekstem (posadzka ~#e0e0e0) po nakładce
+     daje kontrast z bielą powyżej 8:1. */
+  .hero__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to top, rgb(4 22 38 / 0.92) 0%, rgb(4 22 38 / 0.7) 38%, rgb(4 22 38 / 0.15) 75%),
+      linear-gradient(to right, rgb(4 22 38 / 0.55), rgb(4 22 38 / 0) 65%);
+  }
+
+  .hero__content {
+    padding-top: calc(var(--header-h) + 3rem);
+    padding-bottom: clamp(4rem, 3rem + 5vw, 7.5rem);
+  }
+
+  .hero__title {
+    max-width: 17ch;
+    font-size: var(--fs-h1);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+  }
+
+  .hero__text {
+    max-width: 52ch;
+    margin-top: 1.5rem;
+    font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.3125rem);
+    line-height: 1.5;
+    color: rgb(255 255 255 / 0.9);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 2.5rem;
+  }
+
+  .hero__toggle {
+    position: absolute;
+    right: var(--gutter);
+    bottom: clamp(4rem, 3rem + 5vw, 7.5rem);
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border: 2px solid rgb(255 255 255 / 0.6);
+    border-radius: 50%;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .hero__toggle:hover {
+    border-color: #fff;
+  }
+
+  .hero__toggle .icon-play,
+  .hero__toggle[aria-pressed='true'] .icon-pause {
+    display: none;
+  }
+
+  .hero__toggle[aria-pressed='true'] .icon-play {
+    display: block;
+  }
+
+  @media (max-width: 767px) {
+    .hero {
+      min-height: max(560px, 100svh - 56px);
+    }
+
+    .hero__content {
+      padding-top: calc(var(--header-h-mobile) + 2rem);
+      padding-bottom: 2.5rem;
+    }
+
+    .hero__actions .btn {
+      flex: 1 1 100%;
+    }
+
+    .hero__toggle {
+      top: calc(var(--header-h-mobile) + 1rem);
+      bottom: auto;
+      width: 44px;
+      height: 44px;
+    }
+  }
+</style>

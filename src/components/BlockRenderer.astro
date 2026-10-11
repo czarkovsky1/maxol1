@@ -1,0 +1,39 @@
+---
+// Zamienia listę bloków (z Sanity, teraz z danych przykładowych) na komponenty.
+// Nowy blok = nowy komponent + jedna linia w mapie poniżej.
+import Hero from './blocks/Hero.astro';
+import HeroLiquid from './blocks/HeroLiquid.astro';
+import Partners from './blocks/Partners.astro';
+import OfferPanels from './blocks/OfferPanels.astro';
+import Reach from './blocks/Reach.astro';
+import Industries from './blocks/Industries.astro';
+import Facilities from './blocks/Facilities.astro';
+import Process from './blocks/Process.astro';
+import Brands from './blocks/Brands.astro';
+
+interface Props {
+  blocks: readonly { _type: string; _key: string; [key: string]: unknown }[];
+}
+
+const components: Record<string, any> = {
+  hero: Hero,
+  heroLiquid: HeroLiquid,
+  partners: Partners,
+  reach: Reach,
+  offerPanels: OfferPanels,
+  industries: Industries,
+  facilities: Facilities,
+  process: Process,
+  brands: Brands,
+};
+
+const { blocks } = Astro.props;
+---
+
+{
+  blocks.map((block, i) => {
+    const Component = components[block._type];
+    // prevType: niektóre bloki dopasowują odstępy do poprzedniego (np. po hero z kroplą)
+    return Component ? <Component {...block} prevType={blocks[i - 1]?._type} /> : null;
+  })
+}

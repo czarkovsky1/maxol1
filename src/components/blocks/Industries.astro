@@ -1,0 +1,146 @@
+---
+// Blok „Dla kogo”: po lewej przyklejony nagłówek z CTA, po prawej branże.
+// Każda branża linkuje do pasujących kategorii oferty (linki wewnętrzne —
+// w Sanity jako referencje do dokumentów „Usługa”).
+
+interface Props {
+  heading: string;
+  text?: string;
+  cta?: { label: string; href: string };
+  items: readonly {
+    title: string;
+    audience: string;
+    text: string;
+    links: readonly { label: string; href: string }[];
+  }[];
+}
+
+const { heading, text, cta, items } = Astro.props;
+---
+
+<section class="section industries" aria-labelledby="industries-heading">
+  <div class="container industries__inner">
+    <div class="industries__intro">
+      <h2 id="industries-heading" class="industries__title">{heading}</h2>
+      {text && <p class="industries__text">{text}</p>}
+      {cta && <a class="btn btn--primary industries__cta" href={cta.href}>{cta.label}</a>}
+    </div>
+
+    <ul class="industries__list" role="list">
+      {
+        items.map((item) => (
+          <li class="industry">
+            <h3 class="industry__title">{item.title}</h3>
+            <p class="industry__audience">{item.audience}</p>
+            <p class="industry__text">{item.text}</p>
+            <ul class="industry__links" role="list" aria-label={`Oferta: ${item.title}`}>
+              {item.links.map((link) => (
+                <li>
+                  <a href={link.href}>{link.label}</a>
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .industries__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: clamp(2.5rem, 2rem + 4vw, 6rem);
+    align-items: start;
+  }
+
+  .industries__intro {
+    position: sticky;
+    top: calc(var(--header-h) + 2.5rem);
+  }
+
+  .industries__title {
+    max-width: 14ch;
+    font-size: var(--fs-h2);
+    color: var(--c-heading);
+  }
+
+  .industries__text {
+    max-width: 44ch;
+    margin-top: 1.5rem;
+    color: var(--c-muted);
+  }
+
+  .industries__cta {
+    margin-top: 2.25rem;
+  }
+
+  .industries__list {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .industry {
+    padding: clamp(1.75rem, 1.2rem + 1.6vw, 2.75rem);
+    background: var(--c-bg-alt);
+  }
+
+  .industry__title {
+    font-size: clamp(1.625rem, 1.3rem + 1vw, 2.25rem);
+    color: var(--c-heading);
+  }
+
+  .industry__audience {
+    margin-top: 0.5rem;
+    font-size: var(--fs-small);
+    font-weight: 600;
+    color: var(--c-muted);
+  }
+
+  .industry__text {
+    max-width: 58ch;
+    margin-top: 1.125rem;
+  }
+
+  .industry__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .industry__links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 1rem;
+    border: 1px solid var(--c-line);
+    border-radius: var(--radius);
+    background: #fff;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--c-heading);
+    text-decoration: none;
+    transition: border-color 0.2s var(--ease), background-color 0.2s var(--ease);
+  }
+
+  .industry__links a:hover {
+    border-color: var(--c-heading);
+  }
+
+  @media (max-width: 900px) {
+    .industries__inner {
+      grid-template-columns: 1fr;
+    }
+
+    .industries__intro {
+      position: static;
+    }
+  }
+</style>

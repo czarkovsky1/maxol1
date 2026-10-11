@@ -1,0 +1,37 @@
+---
+// Szkielet każdej strony: <head>, nagłówek, treść, pasek mobilny.
+// Pełny komponent <Seo /> dojdzie na etapie SEO; teraz tylko title i description.
+import '@fontsource-variable/archivo';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import MobileCtaBar from '../components/MobileCtaBar.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  transparentHeader?: boolean;
+  noindex?: boolean;
+}
+
+const { title, description, transparentHeader = false, noindex = false } = Astro.props;
+---
+
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <a class="skip-link" href="#tresc">Przejdź do treści</a>
+    <Header transparent={transparentHeader} />
+    <main id="tresc">
+      <slot />
+    </main>
+    <MobileCtaBar />
+  </body>
+</html>

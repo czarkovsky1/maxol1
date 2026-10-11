@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BlockRenderer from '../components/BlockRenderer.astro';
+import { homePage } from '../data/home';
+---
+
+<BaseLayout
+  title="Maxol – hurtownia olejów i smarów ORLEN OIL i Castrol | Suchedniów"
+  description="Hurtowa dystrybucja olejów, smarów i płynów eksploatacyjnych dla przemysłu, transportu, rolnictwa i warsztatów. Dostawy własną flotą w 7 województwach."
+  transparentHeader
+>
+  <BlockRenderer blocks={homePage.blocks} />
+</BaseLayout>

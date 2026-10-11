@@ -1,0 +1,224 @@
+---
+// Blok „Jak współpracujemy”: kroki połączone linią, która po wjechaniu sekcji
+// na ekran wypełnia się żółtym kolorem (kolejne punkty „zapalają się”).
+// Kolejność wynika z linii i listy numerowanej <ol> — bez ozdobnych numerków.
+import { siteSettings } from '../../data/site';
+
+interface Props {
+  heading: string;
+  text?: string;
+  steps: readonly { title: string; text: string }[];
+  cta?: { label: string; href: string };
+}
+
+const { heading, text, steps, cta } = Astro.props;
+---
+
+<section class="section process" aria-labelledby="process-heading">
+  <div class="container">
+    <div class="process__head">
+      <h2 id="process-heading" class="process__title">{heading}</h2>
+      {text && <p class="process__text">{text}</p>}
+    </div>
+
+    <ol class="process__steps" data-process style={`--n:${steps.length}`}>
+      {
+        steps.map((step, i) => (
+          <li class="step" style={`--i:${i}`}>
+            <span class="step__dot" aria-hidden="true" />
+            <h3 class="step__title">{step.title}</h3>
+            <p class="step__text">{step.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+
+    {
+      cta && (
+        <div class="process__actions">
+          <a class="btn btn--primary" href={cta.href}>{cta.label}</a>
+          <a class="process__phone" href={siteSettings.phone.href}>
+            lub zadzwoń: <strong>{siteSettings.phone.display}</strong>
+          </a>
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<script>
+  const list = document.querySelector<HTMLElement>('[data-process]');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (list && !reduce && 'IntersectionObserver' in window) {
+    list.classList.add('is-armed');
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          list.classList.add('is-lit');
+          io.disconnect();
+        }
+      },
+      { threshold: 0.5 },
+    );
+    io.observe(list);
+  }
+</script>
+
+<style>
+  .process__head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1.5rem 4rem;
+    align-items: end;
+  }
+
+  .process__title {
+    max-width: 16ch;
+    font-size: var(--fs-h2);
+    color: var(--c-heading);
+  }
+
+  .process__text {
+    max-width: 52ch;
+    color: var(--c-muted);
+  }
+
+  /* --- Oś kroków: tor (szary) + wypełnienie (żółte) --- */
+  .process__steps {
+    --dot: 18px;
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+    gap: 2.5rem;
+    margin: clamp(3rem, 2.5rem + 2vw, 4.5rem) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .process__steps::before,
+  .process__steps::after {
+    content: '';
+    position: absolute;
+    top: calc(var(--dot) / 2 - 2px);
+    left: 0;
+    /* linia kończy się na ostatnim punkcie */
+    right: calc((100% - (var(--n) - 1) * 2.5rem) / var(--n) - var(--dot));
+    height: 4px;
+    border-radius: 2px;
+  }
+
+  .process__steps::before {
+    background: var(--c-line);
+  }
+
+  .process__steps::after {
+    background: var(--c-yellow);
+    transform-origin: left;
+  }
+
+  .process__steps.is-armed::after {
+    transform: scaleX(0);
+    transition: transform 1.8s cubic-bezier(0.55, 0.1, 0.25, 1) 0.2s;
+  }
+
+  .process__steps.is-armed.is-lit::after {
+    transform: scaleX(1);
+  }
+
+  .step {
+    position: relative;
+    padding-top: calc(var(--dot) + 1.75rem);
+  }
+
+  .step__dot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    width: var(--dot);
+    height: var(--dot);
+    border-radius: 50%;
+    background: var(--c-heading);
+    box-shadow: 0 0 0 5px #fff;
+  }
+
+  .process__steps.is-armed .step__dot {
+    background: var(--c-line);
+    transition: background-color 0.3s var(--ease) calc(0.25s + var(--i) * 0.45s);
+  }
+
+  .process__steps.is-armed.is-lit .step__dot {
+    background: var(--c-heading);
+  }
+
+  .step__title {
+    font-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+    color: var(--c-heading);
+  }
+
+  .step__text {
+    margin-top: 0.75rem;
+    color: var(--c-muted);
+  }
+
+  .process__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 2rem;
+    margin-top: clamp(3rem, 2.5rem + 2vw, 4.5rem);
+  }
+
+  .process__phone {
+    color: var(--c-muted);
+    text-decoration: none;
+  }
+
+  .process__phone strong {
+    color: var(--c-heading);
+    white-space: nowrap;
+  }
+
+  .process__phone:hover strong {
+    text-decoration: underline;
+  }
+
+  /* --- Telefon: oś pionowa po lewej --- */
+  @media (max-width: 900px) {
+    .process__head {
+      grid-template-columns: 1fr;
+    }
+
+    .process__steps {
+      grid-template-columns: 1fr;
+      gap: 2.25rem;
+    }
+
+    .process__steps::before,
+    .process__steps::after {
+      top: 0;
+      bottom: 0;
+      left: calc(var(--dot) / 2 - 2px);
+      right: auto;
+      width: 4px;
+      height: auto;
+    }
+
+    .process__steps::after {
+      transform-origin: top;
+    }
+
+    .process__steps.is-armed::after {
+      transform: scaleY(0);
+    }
+
+    .process__steps.is-armed.is-lit::after {
+      transform: scaleY(1);
+    }
+
+    .step {
+      padding-top: 0;
+      padding-left: calc(var(--dot) + 1.5rem);
+    }
+  }
+</style>

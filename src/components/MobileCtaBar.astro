@@ -1,0 +1,53 @@
+---
+// Pasek na dole ekranu telefonu: dwie najważniejsze akcje zawsze pod kciukiem.
+import { siteSettings, primaryCta } from '../data/site';
+---
+
+<div class="mobile-cta">
+  <a class="mobile-cta__call" href={siteSettings.phone.href}>Zadzwoń</a>
+  <a class="mobile-cta__ask" href={primaryCta.href}>{primaryCta.label}</a>
+</div>
+
+<style>
+  .mobile-cta {
+    display: none;
+  }
+
+  @media (max-width: 767px) {
+    .mobile-cta {
+      position: fixed;
+      inset: auto 0 0;
+      z-index: 40;
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      padding-bottom: env(safe-area-inset-bottom);
+      background: var(--c-navy-900);
+      box-shadow: 0 -1px 0 rgb(255 255 255 / 0.1);
+    }
+
+    .mobile-cta a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 56px;
+      font-size: 0.9375rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+
+    .mobile-cta__call {
+      color: #fff;
+    }
+
+    .mobile-cta__ask {
+      background: var(--c-yellow);
+      color: var(--c-navy-900);
+    }
+
+    :global(body) {
+      padding-bottom: 56px;
+    }
+  }
+</style>

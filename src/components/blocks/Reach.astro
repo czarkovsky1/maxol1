@@ -1,0 +1,247 @@
+---
+// Blok „Zasięg”: liczby wplecione w jedno zdanie + mapa obsługiwanych województw.
+// Zdanie to lista fragmentów; fragment z `stat` jest wyróżniony
+// (w Sanity: tekst z wyróżnieniem zaznaczanym przez redaktora).
+import { voivodeships, mapViewBox, suchedniow } from '../../data/poland-map';
+
+interface Props {
+  heading: string;
+  sentence: readonly { text: string; stat?: boolean }[];
+  regions: readonly string[];
+  hubLabel: string;
+}
+
+const { heading, sentence, regions, hubLabel } = Astro.props;
+const served = new Set(regions);
+const mapLabel = `Mapa Polski. Obsługiwane województwa: ${regions.join(', ')}. Centrum Dystrybucji w Suchedniowie.`;
+---
+
+<section class="reach" aria-labelledby="reach-heading">
+  <div class="container reach__inner">
+    <div class="reach__copy">
+      <h2 id="reach-heading" class="visually-hidden">{heading}</h2>
+      <p class="reach__sentence">
+        {sentence.map((part) => (part.stat ? <strong>{part.text}</strong> : part.text))}
+      </p>
+      <p class="reach__regions">{regions.join(' · ')}</p>
+    </div>
+
+    <figure class="reach__map" data-reach-map>
+      <svg viewBox={mapViewBox} role="img" aria-label={mapLabel}>
+        {
+          voivodeships.map((v) => (
+            <path
+              class:list={['region', { 'region--served': served.has(v.name) }]}
+              d={v.d}
+              style={served.has(v.name) ? `--i:${[...served].indexOf(v.name)}` : undefined}
+            />
+          ))
+        }
+        <g class="hub" transform={`translate(${suchedniow.x} ${suchedniow.y})`}>
+          <g class="hub__inner">
+            <circle class="hub__pulse" r="11" />
+            <circle class="hub__dot" r="9" />
+            <text class="hub__label" x="16" y="5">Suchedniów</text>
+          </g>
+        </g>
+      </svg>
+      <figcaption class="reach__hub">
+        <span class="reach__hub-dot" aria-hidden="true"></span>
+        {hubLabel}
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<script>
+  // Animacja mapy: województwa zapalają się kolejno, gdy mapa wjeżdża na ekran.
+  // Bez JS albo przy „ogranicz ruch” mapa jest od razu w stanie końcowym.
+  const map = document.querySelector<HTMLElement>('[data-reach-map]');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (map && !reduce && 'IntersectionObserver' in window) {
+    map.classList.add('is-armed');
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          map.classList.add('is-lit');
+          io.disconnect();
+        }
+      },
+      { threshold: 0.45 },
+    );
+    io.observe(map);
+  }
+</script>
+
+<style>
+  .reach {
+    padding-block: var(--section-y);
+    background: var(--c-navy-900);
+    color: #fff;
+    overflow: hidden;
+  }
+
+  .reach__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: clamp(3rem, 2rem + 4vw, 6rem);
+    align-items: center;
+  }
+
+  /* Zdanie jako główny element sekcji: duży, gruby tekst,
+     liczby w żółtym (żółty na granacie 11:1) */
+  .reach__sentence {
+    font-size: clamp(1.875rem, 1.1rem + 2.6vw, 3.5rem);
+    font-weight: 600;
+    line-height: 1.18;
+    letter-spacing: -0.025em;
+    color: rgb(255 255 255 / 0.72);
+    text-wrap: balance;
+  }
+
+  .reach__sentence strong {
+    font-weight: 800;
+    color: var(--c-yellow);
+    white-space: nowrap;
+  }
+
+  .reach__regions {
+    max-width: 52ch;
+    margin-top: 2.5rem;
+    font-size: var(--fs-small);
+    line-height: 1.8;
+    color: rgb(255 255 255 / 0.7);
+  }
+
+  .reach__map {
+    margin: 0;
+  }
+
+  .reach__map svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .region {
+    fill: rgb(255 255 255 / 0.07);
+    stroke: var(--c-navy-900);
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+  }
+
+  .region--served {
+    fill: #fff;
+  }
+
+  .hub__dot {
+    fill: var(--c-yellow);
+    stroke: var(--c-navy-900);
+    stroke-width: 3;
+  }
+
+  .hub__label {
+    font-family: var(--font);
+    font-size: 15px;
+    font-weight: 700;
+    fill: var(--c-navy-900);
+  }
+
+  .hub__pulse {
+    fill: none;
+    stroke: var(--c-yellow);
+    stroke-width: 2;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: pulse 2.4s var(--ease) infinite;
+  }
+
+  @keyframes pulse {
+    from {
+      transform: scale(1);
+      opacity: 0.9;
+    }
+    to {
+      transform: scale(3.2);
+      opacity: 0;
+    }
+  }
+
+  .reach__hub {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    margin-top: 1.25rem;
+    font-size: var(--fs-small);
+    color: rgb(255 255 255 / 0.8);
+  }
+
+  .reach__hub-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--c-yellow);
+  }
+
+  /* Stan „uzbrojony” (przed wjazdem na ekran) i kolejne zapalanie.
+     Kolejność = kolejność w polu `regions`, zaczynamy od świętokrzyskiego. */
+  .reach__map.is-armed .region--served {
+    fill: rgb(255 255 255 / 0.07);
+    transition: fill 0.7s var(--ease) calc(0.35s + var(--i) * 0.16s);
+  }
+
+  .reach__map.is-armed.is-lit .region--served {
+    fill: #fff;
+  }
+
+  .hub__inner {
+    transform-box: fill-box;
+    transform-origin: 11px 11px;
+  }
+
+  .reach__map.is-armed .hub__inner {
+    opacity: 0;
+    transform: scale(0.3);
+    transition:
+      opacity 0.4s var(--ease),
+      transform 0.6s cubic-bezier(0.3, 1.6, 0.5, 1);
+  }
+
+  .reach__map.is-armed.is-lit .hub__inner {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .reach__map.is-armed:not(.is-lit) .hub__pulse {
+    animation: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hub__label {
+    font-family: var(--font);
+    font-size: 15px;
+    font-weight: 700;
+    fill: var(--c-navy-900);
+  }
+
+  .hub__pulse {
+      display: none;
+    }
+
+  }
+
+  @media (max-width: 900px) {
+    .reach__inner {
+      grid-template-columns: 1fr;
+    }
+
+    .reach__map {
+      max-width: 520px;
+    }
+
+    .hub__label {
+      font-size: 24px;
+    }
+  }
+</style>
