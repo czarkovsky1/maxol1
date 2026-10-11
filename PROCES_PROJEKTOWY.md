@@ -128,7 +128,7 @@ Obecne: granat `#0A4A7C` (dominujący), żółty `#FAD900` (akcent w „M” i k
 | 1 | Research starej strony | ✅ | 2026-10-11 |
 | 2 | Wywiad z projektantem (fonty: Archivo; zdjęcia/logo — częściowo) | ✅ | 2026-10-11 |
 | 3 | Struktura strony głównej | ✅ | 2026-10-11 |
-| 4 | Budowa sekcji (komponenty Astro, dane przykładowe) | 🔄 porcja 1/4 | 2026-10-11 |
+| 4 | Budowa sekcji strony głównej (komponenty Astro, dane przykładowe) | ✅ | 2026-10-11 |
 | 5 | Przegląd całości | ⏳ | |
 | T1 | Schematy Sanity + Studio /studio | ⏳ | |
 | T2 | Podłączenie bloków i podstron do Sanity (GROQ, dynamiczne trasy) | ⏳ | |
@@ -185,6 +185,9 @@ Legenda: ⏳ Oczekuje · 🔄 W toku · ✅ Zakończone · ⛔ Wstrzymane
 - [ ] Wektorowe logotypy ORLEN OIL i Castrol od sponsorów (z ich zasad użycia znaku) — tymczasowo pliki ze starej strony
 - [ ] Zdjęcia kategorii oferty — tymczasowo ze starej strony (stockowe); docelowo własne lub nowe
 - [ ] Zdjęcie do sekcji Zaplecze — wygenerowane AI (`src/assets/generated/zaplecze-ai.jpg`); potrzebne prawdziwe zdjęcia Centrum Dystrybucji, floty i linii rozlewczych
+- [ ] PRZY STARCIE: ustawić w Vercelu PUBLIC_ALLOW_INDEXING=true i usunąć nagłówek X-Robots-Tag z vercel.json
+- [ ] Wpisy bloga na stronie głównej to propozycje tematów (treść robocza) — artykuły do napisania
+- [ ] Linki do doborników producentów (Castrol, ORLEN OIL, Total, Shell) — sprawdzić aktualność przed startem
 - [ ] Katalogi PDF — tymczasowo linki do maxol.pl/images/pdf/…; przenieść pliki do Sanity przed zmianą domeny (inaczej linki przestaną działać)
 - [ ] Logotypy Shell, Total/Elf, Mobil, Quator, Amtra — obecnie nazwy tekstem; potrzebne oficjalne pliki (monochromatyczne)
 - [ ] Zdjęcie Opakowań — wygenerowane AI (`src/assets/generated/opakowania-ai.jpg`), przykładowe; poprosić klienta o zdjęcie prawdziwych butelek
@@ -220,10 +223,14 @@ Legenda: ⏳ Oczekuje · 🔄 W toku · ✅ Zakończone · ⛔ Wstrzymane
 | 2026-10-11 | Kolor nagłówków i wyróżnionych tekstów na jasnym tle: ~~#0A4A7C~~ → granat #062B49 (token `--c-heading`) | Projektant |
 | 2026-10-11 | Sekcja partnerów: równe, niższe odstępy góra/dół (90 px na 1440 px); po hero z kroplą górny padding pomniejszony o biały pas tafli (8% ekranu) | Projektant |
 | 2026-10-11 | Kod w repozytorium github.com/czarkovsky1/maxol1 (gałąź main); hosting Vercel podpina projektant | Projektant |
+| 2026-10-11 | Dwie wersje strony głównej: „/” (logo) z wideo w hero, „/strona-glowna” (pozycja „Strona główna” w menu) z kroplą three.js; reszta sekcji wspólna. ~~/o-nas jako plac zabaw~~ (nieaktualne) | Projektant |
+| 2026-10-11 | Indeksowanie wyłączone na całej stronie do czasu startu (meta noindex + nagłówek X-Robots-Tag w vercel.json) | Projektant |
 | 2026-10-11 | Tematy SEO (JSON-LD, OG, canonical itd.) odkładamy na koniec, po warstwie wizualnej; teraz: struktura strony głównej + wygląd | Projektant |
 
 ## 7. Otwarte pytania
-- Strona główna: zostaje wideo czy przenosimy kroplę three.js z /o-nas? (decyzja po testach)
+- Która wersja hero zostanie docelowo na „/”: wideo czy kropla? (obie dostępne: / i /strona-glowna)
+- Formularz kontaktowy: sposób wysyłki (funkcja Vercel + e-mail, zewnętrzna usługa?) i adres odbiorcy; czy zgłoszenia mają trafiać do przedstawiciela wg województwa
+- FAQ: minimalne zamówienie, terminy dostaw, warunki płatności, sprzedaż dla klientów indywidualnych — do potwierdzenia z klientem i dopisania
 
 ## 8. Dziennik kroków
 ### Krok 0 — Start (2026-10-11)
@@ -301,3 +308,13 @@ Legenda: ⏳ Oczekuje · 🔄 W toku · ✅ Zakończone · ⛔ Wstrzymane
 - Sekcja partnerów: niższe, równe odstępy.
 - Repozytorium: `git init`, `.gitignore` (+ `.claude/`), README projektu, commit i push do github.com/czarkovsky1/maxol1 (main).
 **Następne kroki:** Vercel (projektant), dalsze sekcje: Dobierz olej, Wiedza/blog, FAQ, Kontakt, stopka.
+
+### Krok 4h — Dokończenie strony głównej, dwie wersje, noindex (2026-10-11)
+**Polecenie:** pozycja „Strona główna” w menu (wersja z kroplą), logo → wersja z wideo; obie z tymi samymi sekcjami; wyłączyć indeksowanie; dokończyć stronę główną do końca.
+**Co zrobiono:**
+- `/strona-glowna` (dawne `/o-nas`): wersja z kroplą; menu: „Strona główna” jako pierwsza pozycja; logo → `/`. Menu bez łamania napisów, ciaśniejsze na 1200–1380 px, hamburger poniżej 1200 px.
+- Noindex: `allowIndexing` w `site.ts` (zmienna PUBLIC_ALLOW_INDEXING) + `vercel.json` z X-Robots-Tag.
+- Nowe bloki: `OilFinder` (żółty pasek z doborników producentów), `Articles` (3 wpisy — tematy robocze), `Faq` (natywny akordeon details/summary, odpowiedzi tylko z potwierdzonych faktów), `Contact` (formularz-makieta z walidacją i komunikatami przy polach, województwo → przedstawiciel; działy i przedstawiciele), `Footer` (logo, oferta, firma, adres, ORLEN OIL + Castrol, dane rejestrowe wg art. 206 KSH, polityki).
+- Poprawki mobilne: niełamliwe „ORLEN OIL”, wcześniejsze zapalanie osi kroków.
+**Kontrola:** desktop 1440/1240 px, telefon 375 px (brak poziomego przewijania), test walidacji formularza (puste → 5 komunikatów i fokus na pierwszym polu; poprawne → komunikat o wersji testowej), `astro check` 0 błędów.
+**Następne kroki:** etap 5 — przegląd całości (spójność, dostępność), potem schematy Sanity.

@@ -1,0 +1,119 @@
+---
+// Blok „Dobierz olej”: wąski żółty pasek z linkami do doborników producentów.
+// Ścieżka dla warsztatów i kierowców; granatowy tekst na żółtym = 11:1.
+
+interface Props {
+  heading: string;
+  text?: string;
+  links: readonly { label: string; href: string }[];
+  cta?: { label: string; href: string };
+}
+
+const { heading, text, links, cta } = Astro.props;
+---
+
+<section class="finder" aria-labelledby="finder-heading">
+  <div class="container finder__inner">
+    <div class="finder__copy">
+      <h2 id="finder-heading" class="finder__title">{heading}</h2>
+      {text && <p class="finder__text">{text}</p>}
+    </div>
+
+    <div class="finder__actions">
+      <ul class="finder__links" role="list">
+        {
+          links.map((link) => (
+            <li>
+              <a href={link.href} target="_blank" rel="noopener">
+                {link.label}
+                <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+                  <path d="M4 10L10 4M5 4h5v5" fill="none" stroke="currentColor" stroke-width="1.8" />
+                </svg>
+                <span class="visually-hidden"> (otwiera się w nowej karcie)</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      {cta && <a class="finder__cta" href={cta.href}>{cta.label}</a>}
+    </div>
+  </div>
+</section>
+
+<style>
+  .finder {
+    padding-block: clamp(3rem, 2.5rem + 2.5vw, 4.5rem);
+    background: var(--c-yellow);
+    color: var(--c-navy-900);
+  }
+
+  .finder__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: 2rem 4rem;
+    align-items: center;
+  }
+
+  .finder__title {
+    font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.5rem);
+  }
+
+  .finder__text {
+    max-width: 46ch;
+    margin-top: 0.75rem;
+  }
+
+  .finder__links {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .finder__links a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 52px;
+    padding: 0 1rem;
+    border: 2px solid var(--c-navy-900);
+    border-radius: var(--radius);
+    font-weight: 700;
+    color: var(--c-navy-900);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color 0.2s var(--ease), color 0.2s var(--ease);
+  }
+
+  .finder__links a:hover {
+    background: var(--c-navy-900);
+    color: var(--c-yellow);
+  }
+
+  .finder__links a:focus-visible,
+  .finder__cta:focus-visible {
+    outline-color: var(--c-navy-900);
+  }
+
+  .finder__cta {
+    display: inline-block;
+    margin-top: 1rem;
+    font-weight: 600;
+    color: var(--c-navy-900);
+  }
+
+  @media (max-width: 1000px) {
+    .finder__inner {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .finder__links {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

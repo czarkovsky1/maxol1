@@ -1,0 +1,211 @@
+---
+// Stopka: logo, nawigacja, dane kontaktowe, partnerzy (ORLEN OIL, Castrol)
+// i dane rejestrowe spółki wymagane przez art. 206 KSH.
+import { Image } from 'astro:assets';
+import logoWhite from '../assets/brand/maxol-logo-white.webp';
+import logoOrlen from '../assets/legacy/logo-orlen-stopka.webp';
+import logoCastrol from '../assets/legacy/logo-castrol-stopka.webp';
+import { siteSettings, mainNav } from '../data/site';
+import { services } from '../data/home';
+
+const year = new Date().getFullYear();
+const reg = siteSettings.registry;
+---
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="/" aria-label={`${siteSettings.companyName}, strona główna`}>
+          <Image src={logoWhite} alt="" width={207} height={90} class="footer__logo" />
+        </a>
+        <p class="footer__tagline">Hurtowa dystrybucja olejów, smarów i płynów eksploatacyjnych od 35 lat.</p>
+        <a class="footer__phone" href={siteSettings.phone.href}>{siteSettings.phone.display}</a>
+        <a class="footer__mail" href={`mailto:${siteSettings.email}`}>{siteSettings.email}</a>
+      </div>
+
+      <nav class="footer__col" aria-label="Oferta">
+        <h2 class="footer__heading">Oferta</h2>
+        <ul role="list">
+          {services.map((s) => <li><a href={`/oferta/${s.slug}`}>{s.title}</a></li>)}
+        </ul>
+      </nav>
+
+      <nav class="footer__col" aria-label="Firma">
+        <h2 class="footer__heading">Firma</h2>
+        <ul role="list">
+          {mainNav.filter((i) => i.href !== '/strona-glowna').map((i) => <li><a href={i.href}>{i.label}</a></li>)}
+        </ul>
+      </nav>
+
+      <div class="footer__col">
+        <h2 class="footer__heading">Adres</h2>
+        <p>
+          {siteSettings.legalName}<br />
+          {siteSettings.address.street}<br />
+          {siteSettings.address.postalCode} {siteSettings.address.city}
+        </p>
+      </div>
+    </div>
+
+    <div class="footer__partners">
+      <p class="footer__partners-label">Autoryzowany dystrybutor</p>
+      <ul role="list">
+        <li><Image src={logoOrlen} alt="ORLEN OIL" width={286} height={82} /></li>
+        <li><Image src={logoCastrol} alt="Castrol" width={286} height={82} /></li>
+      </ul>
+    </div>
+
+    <div class="footer__legal">
+      <p class="footer__registry">
+        {reg.fullName}, {siteSettings.address.street}, {siteSettings.address.postalCode} {siteSettings.address.city}.
+        {reg.court}, KRS {reg.krs}, NIP {reg.nip}, REGON {reg.regon}, kapitał zakładowy {reg.capital}.
+      </p>
+      <div class="footer__bottom">
+        <p>© {year} {siteSettings.legalName}</p>
+        <ul role="list">
+          <li><a href="/polityka-prywatnosci">Polityka prywatności</a></li>
+          <li><a href="/polityka-cookies">Polityka cookies</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    padding-block: clamp(3.5rem, 2.5rem + 4vw, 6rem) 2rem;
+    background: var(--c-navy-900);
+    color: rgb(255 255 255 / 0.78);
+    font-size: 0.9375rem;
+  }
+
+  .footer a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .footer a:hover {
+    color: #fff;
+    text-decoration: underline;
+  }
+
+  .footer ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .footer__top {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr));
+    gap: 2.5rem 3rem;
+  }
+
+  .footer__logo {
+    width: 132px;
+    height: auto;
+  }
+
+  .footer__tagline {
+    max-width: 32ch;
+    margin-top: 1.25rem;
+  }
+
+  .footer__phone {
+    display: inline-block;
+    margin-top: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #fff !important;
+  }
+
+  .footer__mail {
+    display: block;
+    margin-top: 0.25rem;
+  }
+
+  .footer__heading {
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .footer__col li + li {
+    margin-top: 0.5rem;
+  }
+
+  .footer__partners {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 2rem;
+    margin-top: clamp(2.5rem, 2rem + 2vw, 4rem);
+    padding-top: 2rem;
+    border-top: 1px solid rgb(255 255 255 / 0.14);
+  }
+
+  .footer__partners-label {
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .footer__partners ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .footer__partners li {
+    display: grid;
+    place-items: center;
+    width: 190px;
+    height: 72px;
+    padding: 0.75rem 1rem;
+    background: #fff;
+    border-radius: var(--radius);
+  }
+
+  .footer__partners img {
+    width: 100%;
+    height: auto;
+  }
+
+  .footer__legal {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgb(255 255 255 / 0.14);
+    font-size: var(--fs-small);
+    color: rgb(255 255 255 / 0.68);
+  }
+
+  .footer__registry {
+    max-width: 110ch;
+  }
+
+  .footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem 2rem;
+    margin-top: 1rem;
+  }
+
+  .footer__bottom ul {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 1000px) {
+    .footer__top {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .footer__top {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

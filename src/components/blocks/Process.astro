@@ -58,7 +58,7 @@ const { heading, text, steps, cta } = Astro.props;
           io.disconnect();
         }
       },
-      { threshold: 0.5 },
+      { threshold: 0.3 },
     );
     io.observe(list);
   }

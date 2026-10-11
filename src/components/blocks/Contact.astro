@@ -1,0 +1,375 @@
+---
+// Blok „Kontakt”: formularz zapytania z województwem (zgłoszenie trafia do
+// przedstawiciela z regionu) + dane kontaktowe. Formularz to na razie MAKIETA:
+// waliduje pola, ale nie wysyła danych (wysyłkę podłączymy przy wdrożeniu).
+import { siteSettings } from '../../data/site';
+
+interface Props {
+  anchor?: string;
+  heading: string;
+  text?: string;
+  departments: readonly { name: string; phones: readonly string[]; email?: string }[];
+  reps: readonly { name: string; phone: string; email: string }[];
+}
+
+const { anchor, heading, text, departments, reps } = Astro.props;
+
+const voivodeships = [
+  'dolnośląskie', 'kujawsko-pomorskie', 'lubelskie', 'lubuskie', 'łódzkie', 'małopolskie', 'mazowieckie', 'opolskie',
+  'podkarpackie', 'podlaskie', 'pomorskie', 'śląskie', 'świętokrzyskie', 'warmińsko-mazurskie', 'wielkopolskie', 'zachodniopomorskie',
+];
+const tel = (p: string) => `tel:+48${p.replace(/\D/g, '')}`;
+---
+
+<section class="section contact" id={anchor} aria-labelledby="contact-heading">
+  <div class="container contact__inner">
+    <div class="contact__form-wrap">
+      <h2 id="contact-heading" class="contact__title">{heading}</h2>
+      {text && <p class="contact__text">{text}</p>}
+
+      <form class="form" novalidate data-contact-form>
+        <div class="form__grid">
+          <div class="field">
+            <label for="f-name">Imię i nazwisko <span aria-hidden="true">*</span></label>
+            <input id="f-name" name="name" type="text" autocomplete="name" required />
+            <p class="field__error" id="f-name-err" hidden>Podaj imię i nazwisko.</p>
+          </div>
+          <div class="field">
+            <label for="f-company">Firma</label>
+            <input id="f-company" name="company" type="text" autocomplete="organization" />
+          </div>
+          <div class="field">
+            <label for="f-phone">Telefon <span aria-hidden="true">*</span></label>
+            <input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required pattern="[0-9 +()-]{9,}" />
+            <p class="field__error" id="f-phone-err" hidden>Podaj numer telefonu (min. 9 cyfr).</p>
+          </div>
+          <div class="field">
+            <label for="f-email">E-mail <span aria-hidden="true">*</span></label>
+            <input id="f-email" name="email" type="email" autocomplete="email" required />
+            <p class="field__error" id="f-email-err" hidden>Podaj poprawny adres e-mail.</p>
+          </div>
+          <div class="field field--full">
+            <label for="f-region">Województwo <span aria-hidden="true">*</span></label>
+            <select id="f-region" name="region" required>
+              <option value="">Wybierz województwo</option>
+              {voivodeships.map((v) => <option value={v}>{v}</option>)}
+            </select>
+            <p class="field__hint">Na tej podstawie odezwie się przedstawiciel z Twojego regionu.</p>
+            <p class="field__error" id="f-region-err" hidden>Wybierz województwo.</p>
+          </div>
+          <div class="field field--full">
+            <label for="f-msg">Czego potrzebujesz?</label>
+            <textarea id="f-msg" name="message" rows="4" placeholder="Np. rodzaj olejów, maszyny lub pojazdy, przybliżone ilości"></textarea>
+          </div>
+        </div>
+
+        <div class="consent">
+          <input id="f-consent" name="consent" type="checkbox" required />
+          <label for="f-consent">
+            Wyrażam zgodę na przetwarzanie moich danych przez {siteSettings.legalName} w celu odpowiedzi na zapytanie.
+            Szczegóły w <a href="/polityka-prywatnosci">Polityce prywatności</a>. <span aria-hidden="true">*</span>
+          </label>
+        </div>
+        <p class="field__error" id="f-consent-err" hidden>Zaznacz zgodę, abyśmy mogli odpowiedzieć.</p>
+
+        <button class="btn btn--primary form__submit" type="submit">Wyślij zapytanie</button>
+        <p class="form__status" role="status" aria-live="polite" data-form-status></p>
+      </form>
+    </div>
+
+    <aside class="contact__info" aria-label="Dane kontaktowe">
+      <div class="info-block">
+        <h3 class="info-block__title">Dział handlowy</h3>
+        <a class="info-big" href={siteSettings.phone.href}>{siteSettings.phone.display}</a>
+        <a class="info-mail" href={`mailto:${siteSettings.email}`}>{siteSettings.email}</a>
+      </div>
+
+      <div class="info-block">
+        <h3 class="info-block__title">Adres</h3>
+        <p>
+          {siteSettings.legalName}<br />
+          {siteSettings.address.street}<br />
+          {siteSettings.address.postalCode} {siteSettings.address.city}
+        </p>
+      </div>
+
+      <div class="info-block">
+        <h3 class="info-block__title">Działy</h3>
+        <ul class="info-list" role="list">
+          {
+            departments.map((d) => (
+              <li>
+                <span class="info-list__name">{d.name}</span>
+                <span>
+                  {d.phones.map((p, i) => (
+                    <>
+                      {i > 0 && ', '}
+                      <a href={tel(p)}>{p}</a>
+                    </>
+                  ))}
+                  {d.email && (
+                    <>
+                      <br />
+                      <a href={`mailto:${d.email}`}>{d.email}</a>
+                    </>
+                  )}
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="info-block">
+        <h3 class="info-block__title">Przedstawiciele handlowi</h3>
+        <ul class="info-list" role="list">
+          {
+            reps.map((r) => (
+              <li>
+                <span class="info-list__name">{r.name}</span>
+                <span>
+                  <a href={tel(r.phone)}>{r.phone}</a>
+                  <br />
+                  <a href={`mailto:${r.email}`}>{r.email}</a>
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<script>
+  // Walidacja z czytelnymi komunikatami przy polach; wysyłka — do podłączenia.
+  const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
+  const status = form?.querySelector<HTMLElement>('[data-form-status]');
+  if (form) {
+    const fields = ['f-name', 'f-phone', 'f-email', 'f-region', 'f-consent'];
+    const check = (id: string) => {
+      const el = form.querySelector<HTMLInputElement>(`#${id}`)!;
+      const err = form.querySelector<HTMLElement>(`#${id}-err`)!;
+      const ok = el.checkValidity();
+      err.hidden = ok;
+      el.setAttribute('aria-invalid', String(!ok));
+      if (!ok) el.setAttribute('aria-describedby', `${id}-err`);
+      else el.removeAttribute('aria-describedby');
+      return ok;
+    };
+    fields.forEach((id) => {
+      const el = form.querySelector<HTMLInputElement>(`#${id}`)!;
+      el.addEventListener(el.type === 'checkbox' || el.tagName === 'SELECT' ? 'change' : 'input', () => {
+        if (el.getAttribute('aria-invalid') === 'true') check(id);
+      });
+    });
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const results = fields.map(check);
+      if (results.includes(false)) {
+        const first = fields[results.indexOf(false)];
+        form.querySelector<HTMLElement>(`#${first}`)?.focus();
+        if (status) status.textContent = '';
+        return;
+      }
+      if (status) status.textContent = 'Formularz działa w wersji testowej — wysyłka zostanie podłączona przy wdrożeniu strony.';
+    });
+  }
+</script>
+
+<style>
+  .contact__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: clamp(2.5rem, 2rem + 4vw, 6rem);
+    align-items: start;
+  }
+
+  .contact__title {
+    font-size: var(--fs-h2);
+    color: var(--c-heading);
+  }
+
+  .contact__text {
+    max-width: 52ch;
+    margin-top: 1.25rem;
+    color: var(--c-muted);
+  }
+
+  .form {
+    margin-top: 2.5rem;
+  }
+
+  .form__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem 1.25rem;
+  }
+
+  .field--full {
+    grid-column: 1 / -1;
+  }
+
+  .field label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--c-heading);
+  }
+
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    min-height: 52px;
+    padding: 0.75rem 1rem;
+    border: 1px solid #b7c0c9;
+    border-radius: var(--radius);
+    background: #fff;
+    font: inherit;
+    color: var(--c-ink);
+  }
+
+  .field textarea {
+    resize: vertical;
+  }
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    outline: 3px solid var(--c-yellow);
+    outline-offset: 0;
+    border-color: var(--c-heading);
+  }
+
+  .field [aria-invalid='true'] {
+    border-color: #b42318;
+  }
+
+  .field__hint {
+    margin-top: 0.375rem;
+    font-size: var(--fs-small);
+    color: var(--c-muted);
+  }
+
+  .field__error {
+    margin-top: 0.375rem;
+    font-size: var(--fs-small);
+    font-weight: 600;
+    color: #b42318;
+  }
+
+  .consent {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    margin-top: 1.5rem;
+    font-size: var(--fs-small);
+    color: var(--c-muted);
+  }
+
+  .consent input {
+    flex: none;
+    width: 22px;
+    height: 22px;
+    margin-top: 1px;
+    accent-color: var(--c-navy-900);
+  }
+
+  .consent a {
+    color: var(--c-heading);
+  }
+
+  .form__submit {
+    margin-top: 2rem;
+  }
+
+  .form__status {
+    margin-top: 1rem;
+    font-weight: 600;
+    color: var(--c-heading);
+  }
+
+  .form__status:empty {
+    display: none;
+  }
+
+  /* Dane kontaktowe */
+  .contact__info {
+    display: grid;
+    gap: 2rem;
+    padding: clamp(1.75rem, 1.2rem + 1.6vw, 2.75rem);
+    background: var(--c-bg-alt);
+  }
+
+  .info-block__title {
+    margin-bottom: 0.625rem;
+    font-size: 1rem;
+    color: var(--c-heading);
+  }
+
+  .info-big {
+    display: block;
+    font-size: clamp(1.75rem, 1.4rem + 1vw, 2.25rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--c-heading);
+    text-decoration: none;
+  }
+
+  .info-mail {
+    display: inline-block;
+    margin-top: 0.25rem;
+    font-weight: 600;
+    color: var(--c-heading);
+  }
+
+  .info-block p,
+  .info-list {
+    color: var(--c-muted);
+  }
+
+  .info-list {
+    display: grid;
+    gap: 0.875rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .info-list li {
+    display: grid;
+    gap: 0.125rem;
+  }
+
+  .info-list__name {
+    font-weight: 700;
+    color: var(--c-ink);
+  }
+
+  .info-list a {
+    color: inherit;
+  }
+
+  .info-list a:hover,
+  .info-mail:hover {
+    color: var(--c-heading);
+  }
+
+  @media (max-width: 1000px) {
+    .contact__inner {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .form__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .form__submit {
+      width: 100%;
+    }
+  }
+</style>

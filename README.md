@@ -27,7 +27,7 @@ Podgląd: http://localhost:4321
 
 ```
 src/
-  pages/            podstrony (index = strona główna, o-nas = plac zabaw z hero three.js)
+  pages/            podstrony (index = strona główna z wideo, strona-glowna = wersja z kroplą three.js)
   layouts/          szkielet strony (head, nagłówek, pasek mobilny)
   components/
     blocks/         bloki sekcji (hero, partnerzy, zasięg, oferta, …) — 1 blok = 1 komponent
@@ -42,3 +42,6 @@ public/             pliki serwowane bez zmian (wideo, favicon)
 ## Hosting
 
 Vercel wykrywa Astro automatycznie: build `npm run build`, katalog wyjściowy `dist`.
+
+**Indeksowanie jest wyłączone** (meta `noindex` + nagłówek `X-Robots-Tag` w `vercel.json`).
+Przy starcie: ustaw w Vercelu `PUBLIC_ALLOW_INDEXING=true` i usuń nagłówek z `vercel.json`.

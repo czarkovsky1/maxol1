@@ -1,0 +1,21 @@
+---
+// Wariant strony głównej z hero w three.js (kropla oleju). Pozostałe sekcje
+// identyczne jak na „/” (ta sama lista bloków), różni się tylko hero.
+// noindex na stałe: to duplikat strony głównej.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BlockRenderer from '../components/BlockRenderer.astro';
+import { homePage } from '../data/home';
+
+const blocks = homePage.blocks.map((block) =>
+  block._type === 'hero' ? { ...block, _type: 'heroLiquid', _key: 'hero-liquid' } : block,
+);
+---
+
+<BaseLayout
+  title="Maxol – hurtownia olejów i smarów ORLEN OIL i Castrol (wersja z kroplą)"
+  description="Hurtowa dystrybucja olejów, smarów i płynów eksploatacyjnych dla przemysłu, transportu, rolnictwa i warsztatów. Dostawy własną flotą w 7 województwach."
+  transparentHeader
+  noindex
+>
+  <BlockRenderer blocks={blocks} />
+</BaseLayout>
