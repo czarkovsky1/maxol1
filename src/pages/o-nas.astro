@@ -1,55 +1,122 @@
 ---
+// „O nas”: hero z kolażem → manifest ze zdjęciami w tekście → historia firmy
+// w rozdziałach (scrollytelling) → pas branż → mozaika zaplecza → certyfikaty → CTA.
+// Fakty wyłącznie ze starej strony maxol.pl; zdjęcia stockowe z Unsplash (src/assets/stock/STOCK.md).
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PageHero from '../components/PageHero.astro';
-import BlockRenderer from '../components/BlockRenderer.astro';
+import AboutHero from '../components/about/AboutHero.astro';
+import Manifesto from '../components/about/Manifesto.astro';
+import StoryScroll from '../components/about/StoryScroll.astro';
+import Marquee from '../components/about/Marquee.astro';
+import FacilityMosaic from '../components/about/FacilityMosaic.astro';
 import Certificates from '../components/Certificates.astro';
 import CtaBand from '../components/CtaBand.astro';
-import { homePage } from '../data/home';
-import heroImg from '../assets/legacy/bg-parallax-subpage-o-nas.webp';
+
+import heroBoxes from '../assets/stock/hero-zolte-skrzynie.jpg';
+import heroTrucks from '../assets/stock/hero-ciezarowki-trasa.jpg';
+import barrels from '../assets/stock/beczki-niebiesko-zolte.jpg';
+import pillFactory from '../assets/stock/fabryka.jpg';
+import pillTractor from '../assets/stock/traktor-zachod.jpg';
+import pillForklift from '../assets/stock/wozek-widlowy.jpg';
+import caps from '../assets/stock/nakretki-rozlewnia.jpg';
+import mechanic from '../assets/stock/mechanik-olej.jpg';
+import truckFields from '../assets/stock/ciezarowka-pola-lot.jpg';
+import team from '../assets/stock/zespol-magazyn.jpg';
+import warehouse from '../assets/stock/magazyn-wozek-regaly.jpg';
+import fleet from '../assets/stock/flota-pod-magazynem.jpg';
+import line from '../assets/stock/linia-produkcyjna.jpg';
+import teamHall from '../assets/stock/zespol-hala.jpg';
 import certOrlen from '../assets/legacy/certyfikat-orlen.jpg';
 import certCastrol from '../assets/legacy/certyfikat-castrol.webp';
 
-const pick = (type: string) => homePage.blocks.filter((b) => b._type === type);
 const PDF = 'https://maxol.pl/images/design/pdf';
 ---
 
 <BaseLayout
   title="O firmie Maxol z Suchedniowa – dystrybutor olejów i smarów"
-  description="35 lat doświadczenia, szeroki wybór olejów i smarów od czołowych producentów. Certyfikowane, niezawodne produkty dla branży motoryzacyjnej i przemysłowej."
+  description="35 lat doświadczenia, autoryzowany dystrybutor ORLEN OIL i Castrol. Własne Centrum Dystrybucji, flota i linie rozlewcze. Dostawy w 7 województwach."
 >
-  <PageHero
-    title="O firmie Maxol"
-    lead="Od 35 lat dostarczamy oleje i środki smarne firmom z branży motoryzacyjnej, transportowej, rolniczej i przemysłowej."
-    crumbs={[{ label: 'O nas' }]}
-    image={{ src: heroImg, alt: 'Narzędzia warsztatowe' }}
+  <AboutHero
+    title="Partner w&nbsp;olejach od&nbsp;35&nbsp;lat"
+    lead="Maxol z Suchedniowa to hurtowy dystrybutor olejów, smarów i płynów eksploatacyjnych. Jesteśmy autoryzowanym dystrybutorem ORLEN OIL i Castrol."
+    images={[
+      { src: heroBoxes, alt: 'Hala magazynowa z regałami i żółtymi skrzyniami' },
+      { src: heroTrucks, alt: 'Ciężarówki na autostradzie o zmierzchu' },
+      { src: barrels, alt: 'Niebieskie i żółte beczki' },
+    ]}
   />
 
-  <section class="section">
-    <div class="container about">
-      <h2 class="about__title">Kim jesteśmy</h2>
-      <div class="prose">
-        <p>
-          Maxol to firma z 35-letnim doświadczeniem, która specjalizuje się w dystrybucji najwyższej jakości olejów i środków smarnych od
-          renomowanych producentów, takich jak ORLEN&nbsp;OIL, Castrol, Shell, Total czy Mobil. Jako autoryzowany dystrybutor ORLEN&nbsp;OIL oraz
-          Castrol zapewniamy szeroki wybór produktów dla motoryzacji, rolnictwa oraz przemysłu ciężkiego.
-        </p>
-        <p>
-          W ofercie mamy także smary, płyny eksploatacyjne, chemię samochodową oraz akcesoria. Obsługujemy klientów ze wszystkich segmentów
-          rynku: od motoryzacji osobowej, przez transport ciężarowy, po sektor przemysłowy i rolniczy.
-        </p>
-        <p>
-          Zaopatrujemy hurt, podhurt, sklepy motoryzacyjne i przemysłowe, stacje paliw i stacje kontroli pojazdów, warsztaty, firmy
-          transportowe i gospodarstwa rolne w siedmiu województwach. Świadczymy usługi dla przemysłu w zakresie gospodarki smarowej.
-        </p>
-        <p>
-          Zatrudniamy ponad 30 osób, w tym 10 w dziale handlowym. Nasi pracownicy stale podnoszą kwalifikacje, uczestnicząc w szkoleniach
-          branży olejowej.
-        </p>
-      </div>
-    </div>
-  </section>
+  <Manifesto
+    label="Czym się zajmujemy"
+    parts={[
+      { text: 'Dostarczamy oleje i smary do zakładów przemysłowych', image: pillFactory },
+      { text: ', gospodarstw rolnych', image: pillTractor },
+      { text: ', hurtowni i warsztatów', image: pillForklift },
+      { text: '. ' },
+      { text: 'Z własnego magazynu, własną flotą, w siedmiu województwach.', muted: true },
+    ]}
+  />
 
-  <BlockRenderer blocks={[...pick('reach'), ...pick('facilities')]} />
+  <StoryScroll
+    heading="Kim jesteśmy"
+    chapters={[
+      {
+        figure: '35',
+        unit: 'lat',
+        title: 'Autoryzowany dystrybutor ORLEN OIL i Castrol',
+        paragraphs: [
+          'Od 35 lat specjalizujemy się w dystrybucji olejów i środków smarnych renomowanych producentów. Jako autoryzowany dystrybutor ORLEN OIL i Castrol dostarczamy oryginalne produkty z pełną dokumentacją.',
+          'W ofercie mamy też oleje Shell, Total, Elf, Mobil i Quator oraz chemię samochodową Amtra.',
+        ],
+        image: { src: caps, alt: 'Złote nakrętki butelek na linii rozlewniczej' },
+      },
+      {
+        figure: '9000+',
+        title: 'Dostawy dla każdej branży',
+        paragraphs: [
+          'Zaopatrujemy hurt i podhurt, sklepy motoryzacyjne i przemysłowe, stacje paliw i stacje kontroli pojazdów, warsztaty, firmy transportowe, rolnictwo i przemysł — od motoryzacji osobowej po przemysł ciężki.',
+          'Oprócz olejów dostarczamy smary, płyny eksploatacyjne, chemię samochodową i akcesoria.',
+        ],
+        note: 'Stałych odbiorców biznesowych',
+        image: { src: mechanic, alt: 'Mechanik dolewa olej do silnika' },
+      },
+      {
+        figure: '7',
+        unit: 'województw',
+        title: 'Własne Centrum Dystrybucji i flota',
+        paragraphs: [
+          'Towar wysyłamy z Centrum Dystrybucji w Suchedniowie własnymi samochodami ciężarowymi i dostawczymi, co zapewnia szybką realizację dostaw.',
+          'Mamy własne linie rozlewcze do konfekcji olejów i płynów oraz magazyny półproduktów i wyrobów gotowych.',
+        ],
+        note: 'Świętokrzyskie · mazowieckie · lubelskie · podkarpackie · małopolskie · łódzkie · śląskie',
+        image: { src: truckFields, alt: 'Ciężarówka na drodze wśród pól, widok z lotu ptaka' },
+      },
+      {
+        figure: '30+',
+        unit: 'osób',
+        title: 'Ludzie, którzy znają oleje',
+        paragraphs: [
+          'Zatrudniamy ponad 30 osób, w tym 10 w dziale handlowym i czterech przedstawicieli w terenie.',
+          'Stale szkolimy się w branży olejowej, żeby doradzać w doborze środków smarnych i prowadzeniu gospodarki smarowej w zakładach przemysłowych.',
+        ],
+        image: { src: team, alt: 'Pracownicy w alejce magazynu' },
+      },
+    ]}
+  />
+
+  <Marquee
+    items={['Hurt', 'Podhurt', 'Sklepy motoryzacyjne', 'Sklepy przemysłowe', 'Stacje paliw', 'Stacje kontroli pojazdów', 'Warsztaty', 'Transport', 'Rolnictwo', 'Przemysł']}
+  />
+
+  <FacilityMosaic
+    heading="Zaplecze, które daje pewność dostaw"
+    text="Nie jesteśmy pośrednikiem bez zaplecza. Towar składujemy, konfekcjonujemy i dowozimy sami, więc odpowiadamy za cały proces dostawy."
+    tiles={[
+      { title: 'Centrum Dystrybucji', text: 'Własne magazyny w Suchedniowie dla półproduktów i produktów gotowych.', image: { src: warehouse, alt: 'Regały magazynowe i wózek widłowy' } },
+      { title: 'Własna flota', text: 'Samochody ciężarowe i dostawcze, którymi szybko realizujemy dostawy.', image: { src: fleet, alt: 'Ciężarówki z naczepami przed magazynem' } },
+      { title: 'Linie rozlewcze', text: 'Konfekcja olejów i płynów na miejscu.', image: { src: line, alt: 'Nowoczesna linia produkcyjna' } },
+      { title: 'Doradztwo', text: 'Dział handlowy i przedstawiciele w terenie.', image: { src: teamHall, alt: 'Pracownice w hali magazynowej' } },
+    ]}
+  />
 
   <Certificates
     heading="Certyfikaty autoryzowanego dystrybutora"
@@ -63,25 +130,29 @@ const PDF = 'https://maxol.pl/images/design/pdf';
   <CtaBand />
 </BaseLayout>
 
-<style>
-  .about {
-    display: grid;
-    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-    gap: 2rem 5rem;
+<script>
+  // Subtelny wjazd sekcji przy przewijaniu; kafle mozaiki po kolei.
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+    const groups = ['.manifest__text', '.story__heading', '.mosaic__head', '.tile', '.certs__inner > *', '.cta-band__inner > *'];
+    const els: HTMLElement[] = [];
+    groups.forEach((sel) =>
+      document.querySelectorAll<HTMLElement>(sel).forEach((el, i) => {
+        el.dataset.reveal = '';
+        el.style.setProperty('--reveal-delay', `${Math.min(i, 3) * 0.12}s`);
+        els.push(el);
+      }),
+    );
+    document.documentElement.classList.add('js-reveal');
+    const io = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add('is-in');
+            io.unobserve(e.target);
+          }
+        }),
+      { threshold: 0.15 },
+    );
+    els.forEach((el) => io.observe(el));
   }
-
-  .about__title {
-    font-size: var(--fs-h2);
-    color: var(--c-heading);
-  }
-
-  .about .prose {
-    font-size: 1.125rem;
-  }
-
-  @media (max-width: 900px) {
-    .about {
-      grid-template-columns: 1fr;
-    }
-  }
-</style>
+</script>

@@ -262,3 +262,25 @@ a:hover .link-arrow svg {
 .prose strong {
   color: var(--c-heading);
 }
+
+/* Wjazd elementów przy przewijaniu (włączany skryptem strony; bez JS wszystko widoczne) */
+.js-reveal [data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.8s var(--ease),
+    transform 0.8s var(--ease);
+  transition-delay: var(--reveal-delay, 0s);
+}
+
+.js-reveal [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js-reveal [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+}

@@ -1,0 +1,92 @@
+---
+// Manifest: jedno duże zdanie z małymi zdjęciami wplecionymi między słowa.
+// Fragment: { text, muted? } albo { text, image } — wtedy ostatnie słowo tekstu jest sklejone
+// z „kapsułką” zdjęcia, więc kapsułka nigdy nie przeskakuje sama do nowego wiersza.
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  label: string;
+  parts: readonly { text: string; muted?: boolean; image?: ImageMetadata }[];
+}
+
+const { label, parts } = Astro.props;
+const split = (t: string) => {
+  const i = t.trimEnd().lastIndexOf(' ');
+  return [t.slice(0, i + 1), t.trimEnd().slice(i + 1)];
+};
+---
+
+<section class="manifest" aria-label={label}>
+  <div class="container">
+    <p class="manifest__text">
+      {
+        parts.map((part) => {
+          if (part.image) {
+            const [head, last] = split(part.text);
+            return (
+              <>
+                {head}
+                <span class="nowrap">{last}<span class="pill" aria-hidden="true"><Image src={part.image} alt="" widths={[180, 360]} sizes="9rem" /></span></span>
+              </>
+            );
+          }
+          return part.muted ? <span class="manifest__muted">{part.text}</span> : part.text;
+        })
+      }
+    </p>
+  </div>
+</section>
+
+<style>
+  .manifest {
+    padding-block: clamp(4rem, 3rem + 5vw, 8rem);
+    background: var(--c-bg-alt);
+  }
+
+  .manifest__text {
+    max-width: 26ch;
+    font-size: clamp(2rem, 1.1rem + 3.6vw, 4.5rem);
+    font-weight: 800;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    color: var(--c-heading);
+    text-wrap: balance;
+  }
+
+  /* Druga część zdania przygaszona; duży tekst: kontrast 4,1:1 na tle #f2f4f6 */
+  .manifest__muted {
+    color: #6b7885;
+  }
+
+  .nowrap {
+    white-space: nowrap;
+  }
+
+  .pill {
+    display: inline-block;
+    width: 2.3em;
+    height: 1em;
+    margin-left: 0.22em;
+    border-radius: 999px;
+    overflow: hidden;
+    vertical-align: -0.12em;
+    transition: width 0.4s var(--ease);
+  }
+
+  .pill :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .manifest__text:hover .pill:hover {
+    width: 3em;
+  }
+
+  @media (max-width: 600px) {
+    .manifest__text {
+      max-width: none;
+    }
+  }
+</style>

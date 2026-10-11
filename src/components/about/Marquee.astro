@@ -1,0 +1,93 @@
+---
+// Żółty pas z przesuwającymi się nazwami branż klientów, rozdzielonymi kroplą z logo.
+// Ozdobny (ta sama lista jest w treści rozdziału), więc ukryty przed czytnikami.
+
+interface Props {
+  items: readonly string[];
+}
+
+const { items } = Astro.props;
+---
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee__track">
+    {
+      [0, 1].map(() => (
+        <ul class="marquee__list">
+          {items.map((item) => (
+            <li>
+              <span>{item}</span>
+              <svg class="marquee__drop" viewBox="0 0 20 26" width="14" height="18">
+                <path d="M10 0C10 0 0 11.5 0 17a10 10 0 0 0 20 0C20 11.5 10 0 10 0z" fill="currentColor" />
+              </svg>
+            </li>
+          ))}
+        </ul>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .marquee {
+    overflow: hidden;
+    padding-block: clamp(1.25rem, 1rem + 1vw, 2rem);
+    background: var(--c-yellow);
+    color: var(--c-navy-900);
+  }
+
+  .marquee__track {
+    display: flex;
+    width: max-content;
+    animation: marquee 45s linear infinite;
+  }
+
+  .marquee:hover .marquee__track {
+    animation-play-state: paused;
+  }
+
+  .marquee__list {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .marquee__list li {
+    display: flex;
+    align-items: center;
+    gap: clamp(1.25rem, 1rem + 1vw, 2rem);
+    padding-right: clamp(1.25rem, 1rem + 1vw, 2rem);
+    font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.5rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+  }
+
+  .marquee__drop {
+    flex: none;
+    opacity: 0.85;
+  }
+
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee__track {
+      animation: none;
+      width: auto;
+    }
+
+    .marquee__list:last-child {
+      display: none;
+    }
+
+    .marquee__list {
+      flex-wrap: wrap;
+      padding-inline: var(--gutter);
+    }
+  }
+</style>

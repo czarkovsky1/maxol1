@@ -194,6 +194,7 @@ Legenda: ⏳ Oczekuje · 🔄 W toku · ✅ Zakończone · ⛔ Wstrzymane
 - [ ] Linki do doborników producentów (Castrol, ORLEN OIL, Total, Shell) — sprawdzić aktualność przed startem
 - [ ] Katalogi PDF — tymczasowo linki do maxol.pl/images/pdf/…; przenieść pliki do Sanity przed zmianą domeny (inaczej linki przestaną działać)
 - [ ] Logotypy Shell, Total/Elf, Mobil, Quator, Amtra — obecnie nazwy tekstem; potrzebne oficjalne pliki (monochromatyczne)
+- [ ] Zdjęcia na stronie „O nas” — stockowe z Unsplash (lista autorów: `src/assets/stock/STOCK.md`); podpisy mozaiki („Centrum Dystrybucji”, „Własna flota”…) ilustrują stockiem — przed startem zastąpić prawdziwymi zdjęciami Maxol
 - [ ] Zdjęcie Opakowań — wygenerowane AI (`src/assets/generated/opakowania-ai.jpg`), przykładowe; poprosić klienta o zdjęcie prawdziwych butelek
 - [ ] Wideo hero: obecnie szkic AI 480p (przykładowy); w wersji Full HD poprosić o europejską ciężarówkę (w szkicu amerykański ciągnik)
 
@@ -232,6 +233,7 @@ Legenda: ⏳ Oczekuje · 🔄 W toku · ✅ Zakończone · ⛔ Wstrzymane
 | 2026-10-11 | Podstrony wg struktury starej strony; formularze jako makiety (bez wysyłki); dwie wersje hero tylko na stronach głównych | Projektant |
 | 2026-10-11 | Przycisk „Zapytaj o ofertę” w nagłówku: na stronach głównych przewija do formularza, na podstronach prowadzi do /kontakt; podstrony kończą się granatowym paskiem CTA | Claude (spójność nawigacji) |
 | 2026-10-11 | Stare adresy bez odpowiednika → przekierowania 301 w vercel.json: /pliki-do-pobrania → /marki#katalogi, /quator → /marki#quator, /promocje → /oferta, /index.php → / | Claude (ciągłość SEO) |
+| 2026-10-11 | „O nas” przeprojektowane: hero „Partner w olejach od 35 lat” (hasło z logo) z kolażem, manifest ze zdjęciami w tekście, historia w rozdziałach (scrollytelling), pas branż, mozaika zaplecza; zdjęcia stockowe Unsplash zamiast AI | Projektant |
 | 2026-10-11 | Tematy SEO (JSON-LD, OG, canonical itd.) odkładamy na koniec, po warstwie wizualnej; teraz: struktura strony głównej + wygląd | Projektant |
 
 ## 7. Otwarte pytania
@@ -335,3 +337,10 @@ Legenda: ⏳ Oczekuje · 🔄 W toku · ✅ Zakończone · ⛔ Wstrzymane
 - Przekierowania 301 dla starych adresów bez odpowiednika (vercel.json).
 **Kontrola:** build 22 stron, automatyczny test linków wewnętrznych (0 błędnych), `astro check` 0 błędów, przegląd desktop 1440 px, test 14 stron na 375 px (brak poziomego przewijania), poprawka gramatyki („Zapytaj o chemię samochodową”).
 **Następne kroki:** przegląd całości (etap 5), potem schematy Sanity i podłączenie treści.
+
+### Krok 4j — Dopracowanie „O nas” (2026-10-11)
+**Polecenie:** przejrzeć przemysłowe strony z Awwwards, dodać zdjęcia, ciekawie ułożyć tekst; stock zamiast AI; tylko ta podstrona.
+**Research:** wyszukiwanie Awwwards dało mało (kolekcja „Industry Websites”: Coffman Engineers — pasek kotwic, duże pasy zdjęć; DETRA — strona offline). Wykorzystane wzorce z nagradzanych stron firmowych: zdanie-manifest ze zdjęciami w tekście, scrollytelling z przyklejonym zdjęciem, mozaika zdjęć, przesuwający się pas z nazwami.
+**Zdjęcia:** 14 zdjęć z Unsplash (licencja Unsplash, darmowe użycie komercyjne), sprawdzone pod kątem licencji (bez Unsplash+) i bez widocznych marek konkurencji (odrzucone beczki MANNOL); autorzy i linki w `src/assets/stock/STOCK.md`.
+**Co zrobiono:** komponenty `src/components/about/`: `AboutHero` (H1 „Partner w olejach od 35 lat”, kolaż 3 zdjęć z wejściem), `Manifesto` (zdanie z kapsułkami zdjęć sklejonymi z ostatnim słowem frazy; druga część przygaszona, kontrast 4,1:1 dla dużego tekstu), `StoryScroll` (4 rozdziały: 35 lat / 9000+ / 7 województw / 30+ osób; zdjęcie przyklejone po lewej przenika się z aktywnym rozdziałem, pasek postępu; telefon — zdjęcie nad rozdziałem), `Marquee` (żółty pas z branżami, separatory w kształcie kropli z logo, pauza na hover, statyczny przy ograniczeniu ruchu), `FacilityMosaic` (4 kafle: wysoki, szeroki, 2 mniejsze, z gradientem pod tekstem). Wjazd sekcji przy przewijaniu (IntersectionObserver, kafle kolejno). Certyfikaty i CTA bez zmian. Treść wyłącznie z faktów ze starej strony.
+**Kontrola:** desktop 1440 px i telefon 375 px (brak poziomego przewijania), działanie scrollytellingu i animacji sprawdzone, `astro check` 0 błędów.
