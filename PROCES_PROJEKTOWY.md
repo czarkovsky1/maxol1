@@ -133,7 +133,7 @@ Obecne: granat `#0A4A7C` (dominujący), żółty `#FAD900` (akcent w „M” i k
 | T1 | Schematy Sanity + Studio /studio | ⏳ | |
 | T2 | Podłączenie bloków i podstron do Sanity (GROQ, dynamiczne trasy) | ⏳ | |
 | T3 | SEO techniczne (Seo, JSON-LD, sitemap, robots, przekierowania) | ⏳ | |
-| T4 | Wdrożenie (GitHub, Vercel, webhook, domena) | ⏳ | |
+| T4 | Wdrożenie (GitHub ✅, Vercel 🔄, webhook, domena) | 🔄 | 2026-10-11 |
 | 6 | Opis projektu + instrukcja panelu dla klienta | ⏳ | |
 
 Legenda: ⏳ Oczekuje · 🔄 W toku · ✅ Zakończone · ⛔ Wstrzymane
@@ -184,7 +184,9 @@ Legenda: ⏳ Oczekuje · 🔄 W toku · ✅ Zakończone · ⛔ Wstrzymane
 - [ ] Księga znaku / dokładne kolory logo, wektorowe logo Maxol (SVG) — obecne webp 207×90 px jest za małe na ekrany retina
 - [ ] Wektorowe logotypy ORLEN OIL i Castrol od sponsorów (z ich zasad użycia znaku) — tymczasowo pliki ze starej strony
 - [ ] Zdjęcia kategorii oferty — tymczasowo ze starej strony (stockowe); docelowo własne lub nowe
-- [ ] Zdjęcie do sekcji Zaplecze — tymczasowo kadr z wideo AI (miękki, 960 px); potrzebne prawdziwe zdjęcia Centrum Dystrybucji, floty i linii rozlewczych
+- [ ] Zdjęcie do sekcji Zaplecze — wygenerowane AI (`src/assets/generated/zaplecze-ai.jpg`); potrzebne prawdziwe zdjęcia Centrum Dystrybucji, floty i linii rozlewczych
+- [ ] Katalogi PDF — tymczasowo linki do maxol.pl/images/pdf/…; przenieść pliki do Sanity przed zmianą domeny (inaczej linki przestaną działać)
+- [ ] Logotypy Shell, Total/Elf, Mobil, Quator, Amtra — obecnie nazwy tekstem; potrzebne oficjalne pliki (monochromatyczne)
 - [ ] Zdjęcie Opakowań — wygenerowane AI (`src/assets/generated/opakowania-ai.jpg`), przykładowe; poprosić klienta o zdjęcie prawdziwych butelek
 - [ ] Wideo hero: obecnie szkic AI 480p (przykładowy); w wersji Full HD poprosić o europejską ciężarówkę (w szkicu amerykański ciągnik)
 
@@ -216,6 +218,8 @@ Legenda: ⏳ Oczekuje · 🔄 W toku · ✅ Zakończone · ⛔ Wstrzymane
 | 2026-10-11 | Oferta: ~~karty 3×2 + pasek Opakowania + przycisk „Cała oferta”~~ (nieaktualne) → rozwijane panele (7 pionowych pasów), pierwszy otwarty: Oleje dla przemysłu | Projektant |
 | 2026-10-11 | Zdjęcie Opakowań wygenerowane w Higgsfield (0,25 kr.) — przykładowe, do zastąpienia | Projektant |
 | 2026-10-11 | Kolor nagłówków i wyróżnionych tekstów na jasnym tle: ~~#0A4A7C~~ → granat #062B49 (token `--c-heading`) | Projektant |
+| 2026-10-11 | Sekcja partnerów: równe, niższe odstępy góra/dół (90 px na 1440 px); po hero z kroplą górny padding pomniejszony o biały pas tafli (8% ekranu) | Projektant |
+| 2026-10-11 | Kod w repozytorium github.com/czarkovsky1/maxol1 (gałąź main); hosting Vercel podpina projektant | Projektant |
 | 2026-10-11 | Tematy SEO (JSON-LD, OG, canonical itd.) odkładamy na koniec, po warstwie wizualnej; teraz: struktura strony głównej + wygląd | Projektant |
 
 ## 7. Otwarte pytania
@@ -288,3 +292,12 @@ Legenda: ⏳ Oczekuje · 🔄 W toku · ✅ Zakończone · ⛔ Wstrzymane
 - `Facilities.astro` („Zaplecze”): granatowa sekcja, zdjęcie (tymczasowo kadr z wideo AI, bez podpisu sugerującego, że to prawdziwy magazyn klienta), nagłówek-wyróżnik, 4 przewagi (CD, flota, linie rozlewcze, doradztwo), CTA.
 **Kontrola:** desktop 1440 i telefon 375, brak przewijania w poziomie; `astro check` 0 błędów.
 **Następne kroki:** Jak współpracujemy + Marki w ofercie.
+
+### Krok 4g — Jak współpracujemy + Marki, zdjęcie zaplecza, GitHub (2026-10-11)
+**Co zrobiono:**
+- Zaplecze: nowe zdjęcie AI (Higgsfield GPT Image 2.5, 2 warianty × 0,25 kr., wybrany wariant z europejską ciężarówką w bramie).
+- `Process.astro`: 4 kroki na osi; linia wypełnia się żółtym po wjechaniu sekcji na ekran, punkty zapalają się kolejno (IntersectionObserver; bez numerków i nadtytułów; <ol> dla semantyki); telefon — oś pionowa; CTA + telefon.
+- `Brands.astro`: ORLEN OIL i Castrol jako duże karty z katalogami PDF (z rozmiarem pliku), pozostałe marki jako jednolite nazwy (Shell i Quator z katalogami).
+- Sekcja partnerów: niższe, równe odstępy.
+- Repozytorium: `git init`, `.gitignore` (+ `.claude/`), README projektu, commit i push do github.com/czarkovsky1/maxol1 (main).
+**Następne kroki:** Vercel (projektant), dalsze sekcje: Dobierz olej, Wiedza/blog, FAQ, Kontakt, stopka.
