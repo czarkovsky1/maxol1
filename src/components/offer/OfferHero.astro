@@ -1,0 +1,142 @@
+---
+// Hero strony „Oferta”: duże H1 + karta autoryzowanego dystrybutora (sponsorzy ORLEN OIL i Castrol).
+import { Image } from 'astro:assets';
+import logoOrlen from '../../assets/legacy/logo-orlen-stopka.webp';
+import logoCastrol from '../../assets/legacy/logo-castrol-stopka.webp';
+
+interface Props {
+  title: string;
+  lead: string;
+}
+
+const { title, lead } = Astro.props;
+---
+
+<section class="ohero" aria-labelledby="ohero-title">
+  <div class="container ohero__grid">
+    <div>
+      <nav class="crumbs" aria-label="Ścieżka nawigacji">
+        <ol>
+          <li><a href="/">Strona główna</a></li>
+          <li><span aria-current="page">Oferta</span></li>
+        </ol>
+      </nav>
+      <h1 id="ohero-title" class="ohero__title" set:html={title} />
+      <p class="ohero__lead">{lead}</p>
+    </div>
+
+    <aside class="partner" aria-label="Autoryzowany dystrybutor">
+      <p class="partner__label">Autoryzowany dystrybutor</p>
+      <ul class="partner__logos" role="list">
+        <li><Image src={logoOrlen} alt="ORLEN OIL" width={286} height={82} loading="eager" /></li>
+        <li><Image src={logoCastrol} alt="Castrol" width={286} height={82} loading="eager" /></li>
+      </ul>
+      <p class="partner__text">Oryginalne produkty z pełną dokumentacją. W ofercie także Shell, Total, Elf, Mobil, Quator i Amtra.</p>
+      <a class="link-arrow" href="/marki#katalogi">
+        Katalogi produktów (PDF)
+        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+          <path d="M3 9h11M10 4.5L14.5 9 10 13.5" fill="none" stroke="currentColor" stroke-width="2" />
+        </svg>
+      </a>
+    </aside>
+  </div>
+</section>
+
+<style>
+  .ohero {
+    padding-block: clamp(2rem, 1.5rem + 2vw, 3.5rem) clamp(3.5rem, 2.5rem + 4vw, 6rem);
+  }
+
+  .ohero__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: 2.5rem clamp(3rem, 2rem + 4vw, 6rem);
+    align-items: end;
+  }
+
+  .crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 0 2rem;
+    padding: 0;
+    list-style: none;
+    font-size: var(--fs-small);
+    color: var(--c-muted);
+  }
+
+  .crumbs li + li::before {
+    content: '/';
+    margin-inline: 0.625rem;
+    color: #9aa6b1;
+  }
+
+  .crumbs a {
+    font-weight: 600;
+    color: var(--c-heading);
+    text-decoration: none;
+  }
+
+  .crumbs a:hover {
+    text-decoration: underline;
+  }
+
+  .ohero__title {
+    max-width: 14ch;
+    font-size: clamp(2.75rem, 1.6rem + 4.6vw, 5.75rem);
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+    color: var(--c-heading);
+  }
+
+  .ohero__lead {
+    max-width: 52ch;
+    margin-top: 1.75rem;
+    font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.3125rem);
+    color: var(--c-muted);
+  }
+
+  .partner {
+    padding: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem);
+    background: var(--c-bg-alt);
+    border-top: 4px solid var(--c-yellow);
+  }
+
+  .partner__label {
+    font-weight: 700;
+    color: var(--c-heading);
+  }
+
+  .partner__logos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin: 1rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .partner__logos li {
+    display: grid;
+    place-items: center;
+    height: 88px;
+    padding: 0.75rem 1rem;
+    background: #fff;
+  }
+
+  .partner__logos img {
+    width: 100%;
+    height: auto;
+  }
+
+  .partner__text {
+    margin: 1.25rem 0 1rem;
+    font-size: var(--fs-small);
+    color: var(--c-muted);
+  }
+
+  @media (max-width: 900px) {
+    .ohero__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

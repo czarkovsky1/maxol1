@@ -1,0 +1,181 @@
+---
+// Kategoria oferty jako duży wiersz: zdjęcie na przemian z lewej i prawej,
+// opis, 3 konkretne punkty (z kroplą z logo), marki i dwa wyjścia: szczegóły / zapytanie.
+import { Image } from 'astro:assets';
+import type { Service } from '../../data/services';
+
+interface Props {
+  service: Service;
+  index: number;
+}
+
+const { service, index } = Astro.props;
+const reverse = index % 2 === 1;
+const headingId = `cat-${service.slug}`;
+// Na liście tylko pierwsze zdanie opisu; pełny opis jest na podstronie kategorii
+const lead = service.body[0].split(/(?<=\.)\s/)[0];
+---
+
+<section class:list={['cat', { 'cat--alt': reverse }]} id={service.slug} data-cat aria-labelledby={headingId}>
+  <div class:list={['container', 'cat__grid', { 'cat__grid--reverse': reverse }]}>
+    <a class="cat__media" href={`/oferta/${service.slug}`} tabindex="-1" aria-hidden="true">
+      <Image src={service.image.src} alt="" widths={[560, 900, 1300]} sizes="(max-width: 900px) 100vw, 54vw" />
+    </a>
+
+    <div class="cat__body">
+      <h2 id={headingId} class="cat__title">{service.title}</h2>
+      <p class="cat__lead">{lead}</p>
+
+      <ul class="cat__points" role="list">
+        {
+          service.highlights.map((h) => (
+            <li>
+              <svg class="cat__drop" viewBox="0 0 20 26" width="12" height="16" aria-hidden="true">
+                <path d="M10 0C10 0 0 11.5 0 17a10 10 0 0 0 20 0C20 11.5 10 0 10 0z" fill="currentColor" />
+              </svg>
+              {h}
+            </li>
+          ))
+        }
+      </ul>
+
+      {
+        service.brands.length > 0 && (
+          <p class="cat__brands">
+            <span class="cat__brands-label">Marki:</span>
+            {service.brands.map((b) => (
+              <span class="cat__brand">{b}</span>
+            ))}
+          </p>
+        )
+      }
+
+      <div class="cat__actions">
+        <a class="btn btn--ghost" href={`/oferta/${service.slug}`}>
+          Szczegóły<span class="visually-hidden">: {service.title}</span>
+        </a>
+        <a class="link-arrow" href="/kontakt">
+          Zapytaj o ofertę
+          <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+            <path d="M3 9h11M10 4.5L14.5 9 10 13.5" fill="none" stroke="currentColor" stroke-width="2" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cat {
+    padding-block: clamp(3.5rem, 2.5rem + 4vw, 7rem);
+    /* przewijanie do kotwicy: miejsce na nagłówek + przyklejony pasek kategorii */
+    scroll-margin-top: calc(var(--header-h) + 60px);
+  }
+
+  .cat--alt {
+    background: var(--c-bg-alt);
+  }
+
+  .cat__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 2.5rem clamp(3rem, 2rem + 4vw, 6.5rem);
+    align-items: center;
+  }
+
+  .cat__grid--reverse .cat__media {
+    order: 2;
+  }
+
+  .cat__media {
+    display: block;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--c-navy-900);
+  }
+
+  .cat__media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.9s var(--ease);
+  }
+
+  .cat__media:hover :global(img) {
+    transform: scale(1.04);
+  }
+
+  .cat__title {
+    font-size: clamp(2rem, 1.4rem + 2vw, 3.25rem);
+    color: var(--c-heading);
+  }
+
+  .cat__lead {
+    max-width: 54ch;
+    margin-top: 1.25rem;
+    color: var(--c-muted);
+  }
+
+  .cat__points {
+    display: grid;
+    gap: 0.75rem;
+    margin: 1.75rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .cat__points li {
+    display: flex;
+    gap: 0.75rem;
+    align-items: baseline;
+    font-weight: 600;
+    color: var(--c-ink);
+  }
+
+  .cat__drop {
+    flex: none;
+    position: relative;
+    top: 2px;
+    color: var(--c-yellow-600);
+  }
+
+  .cat__brands {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.75rem;
+    font-size: var(--fs-small);
+  }
+
+  .cat__brands-label {
+    margin-right: 0.25rem;
+    color: var(--c-muted);
+  }
+
+  .cat__brand {
+    padding: 0.3rem 0.65rem;
+    border: 1px solid var(--c-line);
+    background: #fff;
+    font-weight: 600;
+    color: var(--c-heading);
+  }
+
+  .cat__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 2rem;
+    margin-top: 2.25rem;
+  }
+
+  @media (max-width: 900px) {
+    .cat__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .cat__grid--reverse .cat__media {
+      order: 0;
+    }
+  }
+</style>

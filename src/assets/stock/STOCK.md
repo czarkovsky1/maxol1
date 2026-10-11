@@ -20,3 +20,9 @@ Pobrane 2026-10-11. Docelowo warto zastąpić je prawdziwymi zdjęciami Maxol (m
 | traktor-zachod.jpg | Tom De Decker | https://unsplash.com/photos/_dnc3j1oVlk | free |
 | wozek-widlowy.jpg | Pickawood | https://unsplash.com/photos/6tAIO3pxde4 | free |
 | handlowiec-tablet.jpg | Rodrigo Rodrigues (WOLF ART) | https://unsplash.com/photos/4kjtbC-wMHs | free |
+| oferta-przemysl.jpg | Kirill Prikhodko | https://unsplash.com/photos/kRp5woiVDaY | free |
+| oferta-motoryzacja.jpg | Dextar Studio | https://unsplash.com/photos/gW34cv-Ojjs | free |
+| oferta-rolnictwo.jpg | Robert Wiedemann | https://unsplash.com/photos/FJGZFxtQWko | free |
+| oferta-smary.jpg | Frank R | https://unsplash.com/photos/a4pbk8TW47Q | free |
+| oferta-plyny.jpg | Sincerely Media | https://unsplash.com/photos/Wt4Hi25MT7g | free |
+| oferta-chemia.jpg | GoGoNano | https://unsplash.com/photos/Df9XCGX9Y2U | free |

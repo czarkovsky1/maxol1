@@ -133,28 +133,6 @@ const PDF = 'https://maxol.pl/images/design/pdf';
 </BaseLayout>
 
 <script>
-  // Subtelny wjazd sekcji przy przewijaniu; kafle mozaiki po kolei.
-  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
-    const groups = ['.manifest__text', '.story__heading', '.mosaic__head', '.tile', '.certs__inner > *', '.cta__card'];
-    const els: HTMLElement[] = [];
-    groups.forEach((sel) =>
-      document.querySelectorAll<HTMLElement>(sel).forEach((el, i) => {
-        el.dataset.reveal = '';
-        el.style.setProperty('--reveal-delay', `${Math.min(i, 3) * 0.12}s`);
-        els.push(el);
-      }),
-    );
-    document.documentElement.classList.add('js-reveal');
-    const io = new IntersectionObserver(
-      (entries) =>
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add('is-in');
-            io.unobserve(e.target);
-          }
-        }),
-      { threshold: 0.15 },
-    );
-    els.forEach((el) => io.observe(el));
-  }
+  import { initReveal } from '../scripts/reveal';
+  initReveal(['.manifest__text', '.story__heading', '.mosaic__head', '.tile', '.certs__inner > *', '.cta__card']);
 </script>

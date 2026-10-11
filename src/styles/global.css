@@ -34,6 +34,13 @@
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
+/* Poniżej 1200 px nagłówek nie ma paska pomocniczego (sam pasek główny 72 px) */
+@media (max-width: 1200px) {
+  :root {
+    --header-h: 72px;
+  }
+}
+
 *,
 *::before,
 *::after {

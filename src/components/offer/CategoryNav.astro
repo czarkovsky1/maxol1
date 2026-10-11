@@ -1,0 +1,145 @@
+---
+// Przyklejony pasek kategorii pod nagłówkiem: przewija do kategorii
+// i podświetla tę, przy której akurat jest użytkownik (scrollspy).
+
+interface Props {
+  items: readonly { slug: string; title: string }[];
+}
+
+const { items } = Astro.props;
+---
+
+<nav class="catnav" aria-label="Kategorie oferty" data-catnav>
+  <div class="container">
+    <ul class="catnav__list" role="list" data-catnav-list>
+      {
+        items.map((item, i) => (
+          <li>
+            <a class:list={['catnav__link', { 'is-active': i === 0 }]} href={`#${item.slug}`} data-catnav-link={item.slug}>
+              {item.title}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</nav>
+
+<script>
+  const nav = document.querySelector<HTMLElement>('[data-catnav]');
+  if (nav) {
+    const list = nav.querySelector<HTMLElement>('[data-catnav-list]')!;
+    const links = [...nav.querySelectorAll<HTMLAnchorElement>('[data-catnav-link]')];
+    const sections = links.map((l) => document.getElementById(l.dataset.catnavLink!)).filter(Boolean) as HTMLElement[];
+
+    const setActive = (slug: string) => {
+      links.forEach((l) => {
+        const on = l.dataset.catnavLink === slug;
+        l.classList.toggle('is-active', on);
+        if (on) {
+          l.setAttribute('aria-current', 'true');
+          // na telefonie przewiń pasek tak, by aktywna zakładka była widoczna (tylko w poziomie)
+          const left = l.offsetLeft - (list.clientWidth - l.offsetWidth) / 2;
+          list.scrollTo({ left, behavior: 'smooth' });
+        } else {
+          l.removeAttribute('aria-current');
+        }
+      });
+    };
+
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && setActive(e.target.id)),
+      { rootMargin: '-35% 0px -60% 0px' },
+    );
+    sections.forEach((s) => io.observe(s));
+
+    // cień, gdy pasek jest przyklejony
+    const sentinel = document.createElement('div');
+    nav.before(sentinel);
+    new IntersectionObserver(([e]) => nav.classList.toggle('is-stuck', !e.isIntersecting)).observe(sentinel);
+  }
+</script>
+
+<style>
+  .catnav {
+    position: sticky;
+    top: var(--header-h);
+    z-index: 30;
+    background: #fff;
+    border-block: 1px solid var(--c-line);
+    transition: box-shadow 0.25s var(--ease);
+  }
+
+  .catnav.is-stuck {
+    border-top-color: transparent;
+    box-shadow: 0 8px 24px -16px rgb(6 43 73 / 0.35);
+  }
+
+  .catnav__list {
+    display: flex;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .catnav__list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .catnav__link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 60px;
+    padding: 0 1rem;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--c-muted);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.2s var(--ease);
+  }
+
+  .catnav__link::after {
+    content: '';
+    position: absolute;
+    left: 1rem;
+    right: 1rem;
+    bottom: -1px;
+    height: 3px;
+    background: var(--c-yellow);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s var(--ease);
+  }
+
+  .catnav__link:hover,
+  .catnav__link.is-active {
+    color: var(--c-heading);
+  }
+
+  .catnav__link.is-active::after {
+    transform: scaleX(1);
+  }
+
+  .catnav__link:focus-visible {
+    outline-offset: -3px;
+  }
+
+  @media (min-width: 1201px) {
+    .catnav__list {
+      justify-content: space-between;
+    }
+
+    .catnav li:first-child .catnav__link {
+      padding-left: 0;
+    }
+
+    .catnav li:first-child .catnav__link::after {
+      left: 0;
+    }
+  }
+</style>

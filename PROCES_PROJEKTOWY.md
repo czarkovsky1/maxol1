@@ -237,6 +237,7 @@ Legenda: ⏳ Oczekuje · 🔄 W toku · ✅ Zakończone · ⛔ Wstrzymane
 | 2026-10-11 | Manifest „O nas”: ~~kapsułki ze zdjęciami w tekście i przygaszone drugie zdanie~~ (nieaktualne) → cały tekst w granacie, 3 frazy z żółtym podkreśleniem + obok zmieniające się zdjęcie z etykietą (auto co 4,2 s / po najechaniu) | Projektant |
 | 2026-10-11 | Żółty pas z branżami: font o połowę mniejszy | Projektant |
 | 2026-10-11 | Sekcja CTA na końcu podstron: ~~granatowy pas zlewający się ze stopką~~ → karta na białym tle: zdjęcie + panel w granacie marki #0A4A7C (inny odcień niż stopka), znak wodny kropli, telefon i e-mail; dotyczy wszystkich podstron | Projektant (uwaga), Claude (projekt) |
+| 2026-10-11 | „Oferta” przeprojektowana: hero z kartą autoryzowanego dystrybutora (ORLEN OIL, Castrol), przyklejony pasek 7 kategorii ze scrollspy, kategorie w układzie zygzak z 3 punktami i markami, pas marek, karty „Nie wiesz, co wybrać?”; zdjęcia kategorii → stock Unsplash w wysokiej rozdzielczości (także na stronie głównej i podstronach kategorii) | Projektant (polecenie), Claude (projekt) |
 | 2026-10-11 | Tematy SEO (JSON-LD, OG, canonical itd.) odkładamy na koniec, po warstwie wizualnej; teraz: struktura strony głównej + wygląd | Projektant |
 
 ## 7. Otwarte pytania
@@ -355,3 +356,13 @@ Legenda: ⏳ Oczekuje · 🔄 W toku · ✅ Zakończone · ⛔ Wstrzymane
 - `Marquee.astro`: font clamp(0,875–1,25 rem), mniejsze odstępy i krople.
 - `CtaBand.astro` przeprojektowany (wszystkie podstrony): karta zdjęcie + panel #0A4A7C, znak wodny kropli, przycisk, telefon i e-mail; bez górnego odstępu (przed nim zawsze biała sekcja), dolny odstęp oddziela od stopki. Nowe zdjęcie Unsplash (handlowiec z tabletem), dopisane do STOCK.md.
 **Kontrola:** desktop i telefon, przełączanie fraz i zdjęć, karta CTA na /o-nas i /oferta/smary, `astro check` 0 błędów.
+
+### Krok 4l — Dopracowanie „Oferty” (2026-10-11)
+**Polecenie:** zastosować doświadczenia z „O nas” do podstrony Oferta.
+**Zasady przeniesione:** bez nadtytułów, wyblakłych tekstów i generycznej siatki kart; duże zdjęcia w wysokiej rozdzielczości; treść do szybkiego skanowania; interakcja, która pomaga (nawigacja), a nie ozdabia.
+**Co zrobiono:**
+- Zdjęcia kategorii: 6 nowych zdjęć Unsplash 1600 px (przekładnia, mechanik z olejem, kombajn, łożysko, zbiornik płynu chłodniczego, mikrofibra na lakierze) zamiast zdjęć 768 px ze starej strony; opakowania — bez zmian (zdjęcie AI konkretnych butelek). Autorzy w STOCK.md. Nowe zdjęcia działają też na stronie głównej (panele) i podstronach kategorii.
+- `services.ts`: pole `highlights` (3 punkty na kategorię, z faktów w opisach).
+- Komponenty `src/components/offer/`: `OfferHero` (H1 „Oleje, smary i płyny dla każdej branży” + karta „Autoryzowany dystrybutor” z logo ORLEN OIL i Castrol i linkiem do katalogów), `CategoryNav` (przyklejony pod nagłówkiem tylko w obrębie kategorii; scrollspy; na telefonie przewijany w poziomie z centrowaniem aktywnej zakładki; cień po przyklejeniu), `CategoryRow` (zygzak, naprzemienne tło, pierwsze zdanie opisu, 3 punkty z kroplą z logo, marki, „Szczegóły” + „Zapytaj o ofertę”), `HelpCards` (żółta karta doborników + szara karta katalogów). Pas marek (Marquee) między kategoriami a pomocą.
+- `src/scripts/reveal.ts`: wspólny moduł animacji wjazdu (używany na „O nas” i „Ofercie”). `--header-h` = 72 px poniżej 1200 px (poprawne kotwice i przyklejanie).
+**Kontrola:** desktop 1440 px (hero, pasek, kategorie, pomoc), telefon 375 px (brak poziomego przewijania, pasek kategorii), `astro check` 0 błędów.

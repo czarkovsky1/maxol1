@@ -1,12 +1,13 @@
 // Kategorie oferty. Docelowo dokumenty „Usługa” w Sanity (slug, H1, opis, SEO, marki).
 // Treści i znaczniki SEO przeniesione ze starej strony maxol.pl (adresy /oferta/[slug] bez zmian).
 
-import imgMoto from '../assets/legacy/photo-offer.webp';
-import imgChemia from '../assets/legacy/photo-offer-1.webp';
-import imgPrzemysl from '../assets/legacy/photo-offer-2.webp';
-import imgSmary from '../assets/legacy/photo-offer-3.webp';
-import imgRolnictwo from '../assets/legacy/photo-offer-4.webp';
-import imgPlyny from '../assets/legacy/photo-offer-5.webp';
+// Zdjęcia stockowe z Unsplash (autorzy: src/assets/stock/STOCK.md)
+import imgMoto from '../assets/stock/oferta-motoryzacja.jpg';
+import imgChemia from '../assets/stock/oferta-chemia.jpg';
+import imgPrzemysl from '../assets/stock/oferta-przemysl.jpg';
+import imgSmary from '../assets/stock/oferta-smary.jpg';
+import imgRolnictwo from '../assets/stock/oferta-rolnictwo.jpg';
+import imgPlyny from '../assets/stock/oferta-plyny.jpg';
 // Zdjęcie przykładowe wygenerowane AI (Higgsfield) — do zastąpienia zdjęciem klienta
 import imgOpakowania from '../assets/generated/opakowania-ai.jpg';
 import rycina500 from '../assets/legacy/butelka-500-rycina.webp';
@@ -19,7 +20,8 @@ export const services = [
     slug: 'oleje-dla-przemyslu',
     title: 'Oleje dla przemysłu',
     excerpt: 'Oleje do maszyn w zakładach produkcyjnych, hutach i fabrykach, z doradztwem w doborze.',
-    image: { src: imgPrzemysl, alt: 'Olej przelewany z beczki' },
+    image: { src: imgPrzemysl, alt: 'Zbliżenie przekładni z kołami zębatymi' },
+    highlights: ['Zakłady produkcyjne, huty i fabryki', 'Ochrona przed zużyciem, korozją i skrajnymi temperaturami', 'Doradztwo techniczne w doborze środków smarnych'],
     seo: {
       title: 'Oleje przemysłowe z oferty Maxol – najwyższa jakość i osiągi',
       description: 'Oleje przemysłowe z oferty Maxol spełniają surowe normy branżowe, zapewniając niezawodną pracę maszyn i ich ochronę - są idealne dla przemysłu ciężkiego.',
@@ -36,7 +38,8 @@ export const services = [
     slug: 'oleje-dla-motoryzacji',
     title: 'Oleje dla motoryzacji',
     excerpt: 'Oleje silnikowe do aut osobowych, ciężarowych i motocykli: syntetyczne, półsyntetyczne i mineralne.',
-    image: { src: imgMoto, alt: 'Tłoki silnika smarowane olejem' },
+    image: { src: imgMoto, alt: 'Mechanik wlewa olej do silnika samochodu' },
+    highlights: ['Samochody osobowe, ciężarowe i motocykle', 'Oleje syntetyczne, półsyntetyczne i mineralne', 'Wsparcie w doborze oleju do pojazdu'],
     seo: {
       title: 'Wysokiej jakości oleje dla motoryzacji z oferty firmy Maxol',
       description: 'Oferujemy wysokiej jakości oleje silnikowe dla aut osobowych, ciężarowych i motocykli od Orlen, Castrol i Mobil. Gwarancja ochrony silnika i optymalnej pracy.',
@@ -53,7 +56,8 @@ export const services = [
     slug: 'oleje-dla-rolnictwa',
     title: 'Oleje dla rolnictwa',
     excerpt: 'Oleje do ciągników, kombajnów i maszyn żniwnych, na intensywny sezon i okres przestoju.',
-    image: { src: imgRolnictwo, alt: 'Olej wlewany z kanistra' },
+    image: { src: imgRolnictwo, alt: 'Kombajn podczas żniw o zachodzie słońca' },
+    highlights: ['Ciągniki, kombajny i maszyny do zbioru plonów', 'Ochrona w sezonie i podczas przestoju', 'Mniej awarii i przestojów maszyn'],
     seo: {
       title: 'Niezawodne oleje dla maszyn rolniczych z oferty firmy Maxol',
       description: 'Oferujemy oleje smarujące dla maszyn rolniczych, takich jak ciągniki i kombajny. Produkty od czołowych producentów zapewniają wydajność przez cały sezon.',
@@ -69,7 +73,8 @@ export const services = [
     slug: 'smary',
     title: 'Smary',
     excerpt: 'Smary plastyczne: uniwersalne, wysokotemperaturowe i wodoodporne, dla motoryzacji i przemysłu.',
-    image: { src: imgSmary, alt: 'Smarowanie łożyska tocznego' },
+    image: { src: imgSmary, alt: 'Łożysko toczne' },
+    highlights: ['Smary plastyczne do wszelkich zastosowań', 'Uniwersalne, wysokotemperaturowe i wodoodporne', 'Motoryzacja, przemysł ciężki i rolnictwo'],
     seo: {
       title: 'Smary przemysłowe i motoryzacyjne z oferty firmy Maxol',
       description: 'W ofercie Maxol posiadamy smary dla przemysłu, motoryzacji i rolnictwa. Produkty od Orlen i Castrol zapewniają wydajność i odporność na czynniki zewnętrzne.',
@@ -85,7 +90,8 @@ export const services = [
     slug: 'plyny-chlodnicze',
     title: 'Płyny chłodnicze',
     excerpt: 'Płyny na bazie glikolu etylenowego i propylenowego do samochodów i maszyn.',
-    image: { src: imgPlyny, alt: 'Kanistry płynu chłodniczego ORLEN OIL Petrygo' },
+    image: { src: imgPlyny, alt: 'Zbiornik płynu chłodniczego w komorze silnika' },
+    highlights: ['Na bazie glikolu etylenowego i propylenowego', 'Ochrona przed przegrzaniem, korozją i kamieniem', 'Samochody osobowe, ciężarowe i maszyny rolnicze'],
     seo: {
       title: 'Płyny chłodnicze z oferty Maxol – ochrona silnika i chłodzenia',
       description: 'Płyny chłodnicze z naszej oferty skutecznie chronią przed przegrzaniem i korozją. Są dobrym wyborem dla pojazdów osobowych, ciężarowych i maszyn rolniczych.',
@@ -101,7 +107,8 @@ export const services = [
     slug: 'kosmetyki-i-chemia-samochodowa',
     title: 'Chemia samochodowa',
     excerpt: 'Chemia, kosmetyki i akcesoria Amtra do mycia, ochrony i pielęgnacji pojazdów.',
-    image: { src: imgChemia, alt: 'Nakładanie powłoki ochronnej na lakier samochodu' },
+    image: { src: imgChemia, alt: 'Ściereczka z mikrofibry na masce czarnego samochodu' },
+    highlights: ['Autoryzowany dystrybutor grupy Amtra', 'Preparaty czyszczące, woski i pielęgnacja wnętrza', 'Akcesoria: ściereczki, gąbki, pędzle'],
     seo: {
       title: 'Chemia samochodowa i akcesoria w ofercie firmy Maxol',
       description: 'Proponujemy szeroką gamę chemii samochodowej i akcesoriów, oferując wysokiej jakości produkty. Sprawdź naszą ofertę i zadbaj o swój samochód z nami.',
@@ -120,6 +127,7 @@ export const services = [
     title: 'Opakowania',
     excerpt: 'Butelki z tworzyw z dozownikiem, 1 l i 0,5 l, dla branży chemicznej, motoryzacyjnej i ogrodniczej.',
     image: { src: imgOpakowania, alt: 'Butelki 1 l i 0,5 l z komorą dozującą' },
+    highlights: ['Butelki z dozownikiem 1 l i 0,5 l', 'Dla chemii gospodarczej, motoryzacji i ogrodnictwa', 'Ryciny techniczne do pobrania w PDF'],
     seo: {
       title: 'Opakowania do przechowywania i transportu olejów - Maxol',
       description: 'W ofercie posiadamy opakowania z tworzyw sztucznych z dozownikiem 1 l i 0,5 l. Zobacz ryciny techniczne naszych butelek.',

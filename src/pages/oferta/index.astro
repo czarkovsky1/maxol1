@@ -1,28 +1,42 @@
 ---
+// „Oferta”: hero z kartą dystrybutora → przyklejony pasek kategorii (scrollspy)
+// → 7 kategorii w układzie zygzak → pas marek → „Nie wiesz, co wybrać?” → kontakt.
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import PageHero from '../../components/PageHero.astro';
-import ServiceCards from '../../components/ServiceCards.astro';
-import BlockRenderer from '../../components/BlockRenderer.astro';
+import OfferHero from '../../components/offer/OfferHero.astro';
+import CategoryNav from '../../components/offer/CategoryNav.astro';
+import CategoryRow from '../../components/offer/CategoryRow.astro';
+import HelpCards from '../../components/offer/HelpCards.astro';
+import Marquee from '../../components/about/Marquee.astro';
 import CtaBand from '../../components/CtaBand.astro';
 import { services } from '../../data/services';
-import { homePage } from '../../data/home';
-
-// Blok „Dla kogo” ze strony głównej, ale z przyciskiem prowadzącym do /kontakt
-const industries = homePage.blocks
-  .filter((b) => b._type === 'industries')
-  .map((b) => ({ ...b, cta: { label: 'Zapytaj o ofertę', href: '/kontakt' } }));
 ---
 
 <BaseLayout
   title="Oferta Maxol – oleje, smary, płyny i chemia samochodowa"
-  description="Szeroka oferta Maxol obejmuje oleje silnikowe, przemysłowe i rolnicze, smary, płyny chłodnicze, chemię samochodową i opakowania od topowych producentów."
+  description="Oleje silnikowe, przemysłowe i rolnicze, smary, płyny chłodnicze, chemia samochodowa i opakowania. Autoryzowany dystrybutor ORLEN OIL i Castrol."
 >
-  <PageHero
-    title="Oferta"
-    lead="Oleje i środki smarne producentów krajowych i zagranicznych, takich jak ORLEN OIL, Castrol, Shell, Total czy Mobil, a także płyny eksploatacyjne, chemia samochodowa i opakowania."
-    crumbs={[{ label: 'Oferta' }]}
+  <OfferHero
+    title="Oleje, smary i&nbsp;płyny dla każdej branży"
+    lead="Środki smarne od ORLEN OIL, Castrol i innych producentów, płyny eksploatacyjne, chemia samochodowa i opakowania. Dostarczamy własną flotą w siedmiu województwach."
   />
-  <ServiceCards items={services} />
-  <BlockRenderer blocks={industries} />
+
+  <!-- Wspólny kontener: pasek kategorii jest przyklejony tylko w obrębie kategorii -->
+  <div class="offer-cats">
+    <CategoryNav items={services} />
+    {services.map((service, i) => <CategoryRow service={service} index={i} />)}
+  </div>
+
+  <Marquee items={['ORLEN OIL', 'Castrol', 'Shell', 'Total', 'Elf', 'Mobil', 'Quator', 'Amtra']} />
+
+  <HelpCards
+    heading="Nie wiesz, który produkt wybrać?"
+    text="Sprawdź zalecenia producentów albo przejrzyj katalogi. Jeśli nadal masz wątpliwości, nasz doradca pomoże dobrać produkt."
+  />
+
   <CtaBand />
 </BaseLayout>
+
+<script>
+  import { initReveal } from '../../scripts/reveal';
+  initReveal(['.cat__body', '.cat__media', '.help__head', '.hcard', '.cta__card']);
+</script>
