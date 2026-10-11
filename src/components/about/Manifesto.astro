@@ -1,42 +1,106 @@
 ---
-// Manifest: jedno duże zdanie z małymi zdjęciami wplecionymi między słowa.
-// Fragment: { text, muted? } albo { text, image } — wtedy ostatnie słowo tekstu jest sklejone
-// z „kapsułką” zdjęcia, więc kapsułka nigdy nie przeskakuje sama do nowego wiersza.
+// Manifest: duże zdanie z trzema wyróżnionymi frazami. Obok ramka ze zdjęciem,
+// które zmienia się razem z aktywną frazą (automatycznie co kilka sekund
+// albo po najechaniu na frazę). Tekst pozostaje czysty — zdjęcia są obok, nie w nim.
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 
+type Part = { text: string } | { highlight: string; label: string; image: { src: ImageMetadata; alt: string } };
+
 interface Props {
   label: string;
-  parts: readonly { text: string; muted?: boolean; image?: ImageMetadata }[];
+  parts: readonly Part[];
 }
 
 const { label, parts } = Astro.props;
-const split = (t: string) => {
-  const i = t.trimEnd().lastIndexOf(' ');
-  return [t.slice(0, i + 1), t.trimEnd().slice(i + 1)];
-};
+const highlights = parts.filter((p): p is Extract<Part, { highlight: string }> => 'highlight' in p);
+let h = -1;
 ---
 
-<section class="manifest" aria-label={label}>
-  <div class="container">
+<section class="manifest" aria-label={label} data-manifest>
+  <div class="container manifest__grid">
     <p class="manifest__text">
       {
         parts.map((part) => {
-          if (part.image) {
-            const [head, last] = split(part.text);
+          if ('highlight' in part) {
+            h += 1;
             return (
-              <>
-                {head}
-                <span class="nowrap">{last}<span class="pill" aria-hidden="true"><Image src={part.image} alt="" widths={[180, 360]} sizes="9rem" /></span></span>
-              </>
+              <span class:list={['hl', { 'is-active': h === 0 }]} data-hl={h}>
+                {part.highlight}
+              </span>
             );
           }
-          return part.muted ? <span class="manifest__muted">{part.text}</span> : part.text;
+          return part.text;
         })
       }
     </p>
+
+    <figure class="manifest__media" aria-hidden="true">
+      <div class="manifest__frame">
+        {
+          highlights.map((p, i) => (
+            <Image
+              class:list={['manifest__img', { 'is-active': i === 0 }]}
+              src={p.image.src}
+              alt=""
+              widths={[480, 800, 1100]}
+              sizes="(max-width: 900px) 92vw, 36vw"
+              data-hl-img
+            />
+          ))
+        }
+        <figcaption class="manifest__caption">
+          {highlights.map((p, i) => <span class:list={{ 'is-active': i === 0 }} data-hl-cap>{p.label}</span>)}
+        </figcaption>
+      </div>
+      <ol class="manifest__progress">
+        {highlights.map((_, i) => <li class:list={{ 'is-active': i === 0 }} data-hl-bar><span /></li>)}
+      </ol>
+    </figure>
   </div>
 </section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-manifest]').forEach((root) => {
+    const groups = ['[data-hl]', '[data-hl-img]', '[data-hl-cap]', '[data-hl-bar]'].map((s) => [
+      ...root.querySelectorAll<HTMLElement>(s),
+    ]);
+    const count = groups[0].length;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let index = 0;
+    let timer: number | undefined;
+
+    const show = (i: number) => {
+      index = i;
+      groups.forEach((list) =>
+        list.forEach((el, j) => {
+          el.classList.remove('is-active');
+          if (j === i) {
+            void el.offsetWidth; // restart animacji paska postępu
+            el.classList.add('is-active');
+          }
+        }),
+      );
+    };
+    const stop = () => window.clearInterval(timer);
+    const start = () => {
+      if (reduce) return;
+      stop();
+      timer = window.setInterval(() => show((index + 1) % count), 4200);
+    };
+
+    groups[0].forEach((el, i) =>
+      el.addEventListener('pointerenter', () => {
+        stop();
+        show(i);
+      }),
+    );
+    root.addEventListener('pointerleave', start);
+
+    // Rotacja tylko, gdy sekcja jest na ekranie
+    new IntersectionObserver(([e]) => (e.isIntersecting ? start() : stop()), { threshold: 0.3 }).observe(root);
+  });
+</script>
 
 <style>
   .manifest {
@@ -44,49 +108,148 @@ const split = (t: string) => {
     background: var(--c-bg-alt);
   }
 
+  .manifest__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: clamp(2.5rem, 2rem + 4vw, 6rem);
+    align-items: center;
+  }
+
   .manifest__text {
-    max-width: 26ch;
-    font-size: clamp(2rem, 1.1rem + 3.6vw, 4.5rem);
+    font-size: clamp(2rem, 1.2rem + 2.7vw, 3.875rem);
     font-weight: 800;
-    line-height: 1.12;
+    line-height: 1.14;
     letter-spacing: -0.03em;
     color: var(--c-heading);
-    text-wrap: balance;
+    text-wrap: pretty;
   }
 
-  /* Druga część zdania przygaszona; duży tekst: kontrast 4,1:1 na tle #f2f4f6 */
-  .manifest__muted {
-    color: #6b7885;
+  /* Wyróżniona fraza: żółte podkreślenie rośnie, gdy fraza jest aktywna */
+  .hl {
+    background-image: linear-gradient(var(--c-yellow), var(--c-yellow));
+    background-repeat: no-repeat;
+    background-position: 0 88%;
+    background-size: 0% 0.22em;
+    transition: background-size 0.6s var(--ease);
+    cursor: default;
   }
 
-  .nowrap {
-    white-space: nowrap;
+  .hl.is-active {
+    background-size: 100% 0.22em;
   }
 
-  .pill {
-    display: inline-block;
-    width: 2.3em;
-    height: 1em;
-    margin-left: 0.22em;
-    border-radius: 999px;
+  /* Ramka ze zdjęciem */
+  .manifest__media {
+    margin: 0;
+  }
+
+  .manifest__frame {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    max-height: 600px;
     overflow: hidden;
-    vertical-align: -0.12em;
-    transition: width 0.4s var(--ease);
+    background: var(--c-navy-900);
   }
 
-  .pill :global(img) {
+  .manifest__img {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    opacity: 0;
+    transform: scale(1.06);
+    transition:
+      opacity 0.8s var(--ease),
+      transform 1.4s var(--ease);
   }
 
-  .manifest__text:hover .pill:hover {
-    width: 3em;
+  .manifest__img.is-active {
+    opacity: 1;
+    transform: scale(1);
   }
 
-  @media (max-width: 600px) {
-    .manifest__text {
-      max-width: none;
+  .manifest__caption {
+    position: absolute;
+    left: 1rem;
+    bottom: 1rem;
+    display: grid;
+  }
+
+  .manifest__caption span {
+    grid-area: 1 / 1;
+    justify-self: start;
+    padding: 0.5rem 0.875rem;
+    background: var(--c-yellow);
+    color: var(--c-navy-900);
+    font-size: var(--fs-small);
+    font-weight: 700;
+    opacity: 0;
+    transform: translateY(8px);
+    transition:
+      opacity 0.4s var(--ease),
+      transform 0.4s var(--ease);
+  }
+
+  .manifest__caption span.is-active {
+    opacity: 1;
+    transform: none;
+    transition-delay: 0.2s;
+  }
+
+  /* Pasek postępu pod zdjęciem */
+  .manifest__progress {
+    display: grid;
+    grid-auto-flow: column;
+    gap: 6px;
+    margin: 1rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .manifest__progress li {
+    height: 3px;
+    background: var(--c-line);
+    overflow: hidden;
+  }
+
+  .manifest__progress span {
+    display: block;
+    height: 100%;
+    background: var(--c-heading);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  .manifest__progress li.is-active span {
+    animation: fill 4.2s linear forwards;
+  }
+
+  @keyframes fill {
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .manifest__img {
+      transform: none;
+      transition: opacity 0.01ms;
+    }
+
+    .manifest__progress li.is-active span {
+      animation: none;
+      transform: scaleX(1);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .manifest__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .manifest__frame {
+      aspect-ratio: 4 / 3;
     }
   }
 </style>

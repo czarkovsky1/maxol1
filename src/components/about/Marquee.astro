@@ -17,7 +17,7 @@ const { items } = Astro.props;
           {items.map((item) => (
             <li>
               <span>{item}</span>
-              <svg class="marquee__drop" viewBox="0 0 20 26" width="14" height="18">
+              <svg class="marquee__drop" viewBox="0 0 20 26" width="9" height="12">
                 <path d="M10 0C10 0 0 11.5 0 17a10 10 0 0 0 20 0C20 11.5 10 0 10 0z" fill="currentColor" />
               </svg>
             </li>
@@ -31,7 +31,7 @@ const { items } = Astro.props;
 <style>
   .marquee {
     overflow: hidden;
-    padding-block: clamp(1.25rem, 1rem + 1vw, 2rem);
+    padding-block: clamp(0.75rem, 0.6rem + 0.5vw, 1.05rem);
     background: var(--c-yellow);
     color: var(--c-navy-900);
   }
@@ -39,7 +39,7 @@ const { items } = Astro.props;
   .marquee__track {
     display: flex;
     width: max-content;
-    animation: marquee 45s linear infinite;
+    animation: marquee 38s linear infinite;
   }
 
   .marquee:hover .marquee__track {
@@ -56,11 +56,11 @@ const { items } = Astro.props;
   .marquee__list li {
     display: flex;
     align-items: center;
-    gap: clamp(1.25rem, 1rem + 1vw, 2rem);
-    padding-right: clamp(1.25rem, 1rem + 1vw, 2rem);
-    font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.5rem);
+    gap: clamp(0.75rem, 0.6rem + 0.5vw, 1.1rem);
+    padding-right: clamp(0.75rem, 0.6rem + 0.5vw, 1.1rem);
+    font-size: clamp(0.875rem, 0.7rem + 0.8vw, 1.25rem);
     font-weight: 800;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.01em;
     white-space: nowrap;
   }
 

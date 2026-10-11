@@ -1,6 +1,9 @@
 ---
-// Granatowy pasek na końcu podstron: zaproszenie do kontaktu + telefon.
+// Zaproszenie do kontaktu na końcu podstron: karta na białym tle (oddzielona od
+// granatowej stopki) — zdjęcie + panel w granacie marki z telefonem i e-mailem.
+import { Image } from 'astro:assets';
 import { siteSettings } from '../data/site';
+import defaultImage from '../assets/stock/handlowiec-tablet.jpg';
 
 interface Props {
   heading?: string;
@@ -13,75 +16,154 @@ const {
 } = Astro.props;
 ---
 
-<section class="cta-band" aria-labelledby="cta-band-heading">
-  <div class="container cta-band__inner">
-    <div>
-      <h2 id="cta-band-heading" class="cta-band__title">{heading}</h2>
-      <p class="cta-band__text">{text}</p>
-    </div>
-    <div class="cta-band__actions">
-      <a class="btn btn--primary" href="/kontakt">Zapytaj o ofertę</a>
-      <a class="cta-band__phone" href={siteSettings.phone.href}>
-        lub zadzwoń: <strong>{siteSettings.phone.display}</strong>
-      </a>
+<section class="cta" aria-labelledby="cta-heading">
+  <div class="container">
+    <div class="cta__card">
+      <div class="cta__media">
+        <Image src={defaultImage} alt="Przedstawiciel handlowy z tabletem w magazynie" widths={[480, 800, 1100]} sizes="(max-width: 900px) 100vw, 40vw" />
+      </div>
+
+      <div class="cta__panel">
+        <svg class="cta__drop" viewBox="0 0 20 26" aria-hidden="true">
+          <path d="M10 0C10 0 0 11.5 0 17a10 10 0 0 0 20 0C20 11.5 10 0 10 0z" fill="currentColor" />
+        </svg>
+        <h2 id="cta-heading" class="cta__title">{heading}</h2>
+        <p class="cta__text">{text}</p>
+        <a class="btn btn--primary cta__btn" href="/kontakt">Zapytaj o ofertę</a>
+
+        <dl class="cta__contacts">
+          <div>
+            <dt>Dział handlowy</dt>
+            <dd><a class="cta__phone" href={siteSettings.phone.href}>{siteSettings.phone.display}</a></dd>
+          </div>
+          <div>
+            <dt>E-mail</dt>
+            <dd><a class="cta__mail" href={`mailto:${siteSettings.email}`}>{siteSettings.email}</a></dd>
+          </div>
+        </dl>
+      </div>
     </div>
   </div>
 </section>
 
 <style>
-  .cta-band {
-    padding-block: clamp(3.5rem, 2.5rem + 4vw, 6rem);
-    background: var(--c-navy-900);
-    color: #fff;
+  /* Bez górnego odstępu: na podstronach przed kartą jest biała sekcja z własnym odstępem;
+     dolny odstęp oddziela kartę od granatowej stopki */
+  .cta {
+    padding-block: 0 var(--section-y);
+    background: #fff;
   }
 
-  .cta-band__inner {
+  .cta__card {
     display: grid;
-    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
-    gap: 2rem 4rem;
-    align-items: center;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    min-height: 480px;
+    overflow: hidden;
   }
 
-  .cta-band__title {
-    max-width: 20ch;
+  .cta__media {
+    position: relative;
+    background: var(--c-navy-900);
+  }
+
+  .cta__media :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 30%;
+  }
+
+  /* Panel w granacie marki (#0A4A7C) — inny odcień niż stopka (#062B49) */
+  .cta__panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(2rem, 1.5rem + 3vw, 4.5rem);
+    background: var(--c-navy);
+    color: #fff;
+    overflow: hidden;
+  }
+
+  /* Duża kropla z logo jako znak wodny */
+  .cta__drop {
+    position: absolute;
+    right: -6%;
+    bottom: -22%;
+    width: 46%;
+    color: rgb(255 255 255 / 0.06);
+    pointer-events: none;
+  }
+
+  .cta__title {
+    position: relative;
+    max-width: 18ch;
     font-size: var(--fs-h2);
   }
 
-  .cta-band__text {
-    max-width: 50ch;
-    margin-top: 1rem;
-    color: rgb(255 255 255 / 0.78);
+  .cta__text {
+    position: relative;
+    max-width: 48ch;
+    margin-top: 1.25rem;
+    color: rgb(255 255 255 / 0.85);
   }
 
-  .cta-band__actions {
+  .cta__btn {
+    position: relative;
+    align-self: flex-start;
+    margin-top: 2rem;
+  }
+
+  .cta__contacts {
+    position: relative;
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 1rem 1.75rem;
-    justify-self: end;
+    gap: 1.5rem 3rem;
+    margin: 2.5rem 0 0;
+    padding-top: 1.75rem;
+    border-top: 1px solid rgb(255 255 255 / 0.2);
   }
 
-  .cta-band__phone {
+  .cta__contacts dt {
+    font-size: var(--fs-small);
     color: rgb(255 255 255 / 0.78);
+  }
+
+  .cta__contacts dd {
+    margin: 0.25rem 0 0;
+  }
+
+  .cta__contacts a {
+    color: #fff;
     text-decoration: none;
   }
 
-  .cta-band__phone strong {
-    color: #fff;
-    white-space: nowrap;
-  }
-
-  .cta-band__phone:hover strong {
+  .cta__contacts a:hover {
     text-decoration: underline;
   }
 
+  .cta__phone {
+    font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  .cta__mail {
+    display: inline-block;
+    padding-top: 0.4em;
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
   @media (max-width: 900px) {
-    .cta-band__inner {
+    .cta__card {
       grid-template-columns: 1fr;
     }
 
-    .cta-band__actions {
-      justify-self: start;
+    .cta__media {
+      aspect-ratio: 16 / 10;
     }
   }
 </style>

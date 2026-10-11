@@ -14,9 +14,9 @@ import CtaBand from '../components/CtaBand.astro';
 import heroBoxes from '../assets/stock/hero-zolte-skrzynie.jpg';
 import heroTrucks from '../assets/stock/hero-ciezarowki-trasa.jpg';
 import barrels from '../assets/stock/beczki-niebiesko-zolte.jpg';
-import pillFactory from '../assets/stock/fabryka.jpg';
-import pillTractor from '../assets/stock/traktor-zachod.jpg';
-import pillForklift from '../assets/stock/wozek-widlowy.jpg';
+import factoryBig from '../assets/stock/fabryka.jpg';
+import tractorBig from '../assets/stock/traktor-zachod.jpg';
+import forkliftBig from '../assets/stock/wozek-widlowy.jpg';
 import caps from '../assets/stock/nakretki-rozlewnia.jpg';
 import mechanic from '../assets/stock/mechanik-olej.jpg';
 import truckFields from '../assets/stock/ciezarowka-pola-lot.jpg';
@@ -48,11 +48,13 @@ const PDF = 'https://maxol.pl/images/design/pdf';
   <Manifesto
     label="Czym się zajmujemy"
     parts={[
-      { text: 'Dostarczamy oleje i smary do zakładów przemysłowych', image: pillFactory },
-      { text: ', gospodarstw rolnych', image: pillTractor },
-      { text: ', hurtowni i warsztatów', image: pillForklift },
-      { text: '. ' },
-      { text: 'Z własnego magazynu, własną flotą, w siedmiu województwach.', muted: true },
+      { text: 'Dostarczamy oleje i smary do ' },
+      { highlight: 'zakładów przemysłowych', label: 'Przemysł', image: { src: factoryBig, alt: 'Pracownik przy maszynie w zakładzie produkcyjnym' } },
+      { text: ', ' },
+      { highlight: 'gospodarstw rolnych', label: 'Rolnictwo', image: { src: tractorBig, alt: 'Ciągnik orzący pole o zachodzie słońca' } },
+      { text: ', ' },
+      { highlight: 'hurtowni i\u00A0warsztatów', label: 'Hurt i warsztaty', image: { src: forkliftBig, alt: 'Wózek widłowy w magazynie' } },
+      { text: '. Z własnego magazynu, własną flotą, w siedmiu województwach.' },
     ]}
   />
 
@@ -133,7 +135,7 @@ const PDF = 'https://maxol.pl/images/design/pdf';
 <script>
   // Subtelny wjazd sekcji przy przewijaniu; kafle mozaiki po kolei.
   if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
-    const groups = ['.manifest__text', '.story__heading', '.mosaic__head', '.tile', '.certs__inner > *', '.cta-band__inner > *'];
+    const groups = ['.manifest__text', '.story__heading', '.mosaic__head', '.tile', '.certs__inner > *', '.cta__card'];
     const els: HTMLElement[] = [];
     groups.forEach((sel) =>
       document.querySelectorAll<HTMLElement>(sel).forEach((el, i) => {

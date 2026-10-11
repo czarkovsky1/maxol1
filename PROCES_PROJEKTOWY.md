@@ -234,6 +234,9 @@ Legenda: ⏳ Oczekuje · 🔄 W toku · ✅ Zakończone · ⛔ Wstrzymane
 | 2026-10-11 | Przycisk „Zapytaj o ofertę” w nagłówku: na stronach głównych przewija do formularza, na podstronach prowadzi do /kontakt; podstrony kończą się granatowym paskiem CTA | Claude (spójność nawigacji) |
 | 2026-10-11 | Stare adresy bez odpowiednika → przekierowania 301 w vercel.json: /pliki-do-pobrania → /marki#katalogi, /quator → /marki#quator, /promocje → /oferta, /index.php → / | Claude (ciągłość SEO) |
 | 2026-10-11 | „O nas” przeprojektowane: hero „Partner w olejach od 35 lat” (hasło z logo) z kolażem, manifest ze zdjęciami w tekście, historia w rozdziałach (scrollytelling), pas branż, mozaika zaplecza; zdjęcia stockowe Unsplash zamiast AI | Projektant |
+| 2026-10-11 | Manifest „O nas”: ~~kapsułki ze zdjęciami w tekście i przygaszone drugie zdanie~~ (nieaktualne) → cały tekst w granacie, 3 frazy z żółtym podkreśleniem + obok zmieniające się zdjęcie z etykietą (auto co 4,2 s / po najechaniu) | Projektant |
+| 2026-10-11 | Żółty pas z branżami: font o połowę mniejszy | Projektant |
+| 2026-10-11 | Sekcja CTA na końcu podstron: ~~granatowy pas zlewający się ze stopką~~ → karta na białym tle: zdjęcie + panel w granacie marki #0A4A7C (inny odcień niż stopka), znak wodny kropli, telefon i e-mail; dotyczy wszystkich podstron | Projektant (uwaga), Claude (projekt) |
 | 2026-10-11 | Tematy SEO (JSON-LD, OG, canonical itd.) odkładamy na koniec, po warstwie wizualnej; teraz: struktura strony głównej + wygląd | Projektant |
 
 ## 7. Otwarte pytania
@@ -344,3 +347,11 @@ Legenda: ⏳ Oczekuje · 🔄 W toku · ✅ Zakończone · ⛔ Wstrzymane
 **Zdjęcia:** 14 zdjęć z Unsplash (licencja Unsplash, darmowe użycie komercyjne), sprawdzone pod kątem licencji (bez Unsplash+) i bez widocznych marek konkurencji (odrzucone beczki MANNOL); autorzy i linki w `src/assets/stock/STOCK.md`.
 **Co zrobiono:** komponenty `src/components/about/`: `AboutHero` (H1 „Partner w olejach od 35 lat”, kolaż 3 zdjęć z wejściem), `Manifesto` (zdanie z kapsułkami zdjęć sklejonymi z ostatnim słowem frazy; druga część przygaszona, kontrast 4,1:1 dla dużego tekstu), `StoryScroll` (4 rozdziały: 35 lat / 9000+ / 7 województw / 30+ osób; zdjęcie przyklejone po lewej przenika się z aktywnym rozdziałem, pasek postępu; telefon — zdjęcie nad rozdziałem), `Marquee` (żółty pas z branżami, separatory w kształcie kropli z logo, pauza na hover, statyczny przy ograniczeniu ruchu), `FacilityMosaic` (4 kafle: wysoki, szeroki, 2 mniejsze, z gradientem pod tekstem). Wjazd sekcji przy przewijaniu (IntersectionObserver, kafle kolejno). Certyfikaty i CTA bez zmian. Treść wyłącznie z faktów ze starej strony.
 **Kontrola:** desktop 1440 px i telefon 375 px (brak poziomego przewijania), działanie scrollytellingu i animacji sprawdzone, `astro check` 0 błędów.
+
+### Krok 4k — Poprawki „O nas” po uwagach (2026-10-11)
+**Uwagi:** wyblakłe ostatnie zdanie i kapsułki w tekście przeszkadzają; żółty pas — font o połowę mniejszy; sekcja „Porozmawiajmy…” zlewa się ze stopką i jest nudna.
+**Co zrobiono:**
+- `Manifesto.astro` przepisany: tekst w jednym kolorze, frazy „zakładów przemysłowych”, „gospodarstw rolnych”, „hurtowni i warsztatów” z rosnącym żółtym podkreśleniem; obok ramka 4:5 ze zdjęciem, etykietą (Przemysł / Rolnictwo / Hurt i warsztaty) i paskiem postępu; rotacja tylko gdy sekcja na ekranie, pauza po najechaniu, brak rotacji przy „ogranicz ruch”. Zdjęcia pobrane w większej rozdzielczości (1200 px).
+- `Marquee.astro`: font clamp(0,875–1,25 rem), mniejsze odstępy i krople.
+- `CtaBand.astro` przeprojektowany (wszystkie podstrony): karta zdjęcie + panel #0A4A7C, znak wodny kropli, przycisk, telefon i e-mail; bez górnego odstępu (przed nim zawsze biała sekcja), dolny odstęp oddziela od stopki. Nowe zdjęcie Unsplash (handlowiec z tabletem), dopisane do STOCK.md.
+**Kontrola:** desktop i telefon, przełączanie fraz i zdjęć, karta CTA na /o-nas i /oferta/smary, `astro check` 0 błędów.

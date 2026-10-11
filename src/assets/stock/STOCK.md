@@ -19,3 +19,4 @@ Pobrane 2026-10-11. Docelowo warto zastąpić je prawdziwymi zdjęciami Maxol (m
 | fabryka.jpg | Sam Moghadam | https://unsplash.com/photos/bN_aaTKfwM0 | free |
 | traktor-zachod.jpg | Tom De Decker | https://unsplash.com/photos/_dnc3j1oVlk | free |
 | wozek-widlowy.jpg | Pickawood | https://unsplash.com/photos/6tAIO3pxde4 | free |
+| handlowiec-tablet.jpg | Rodrigo Rodrigues (WOLF ART) | https://unsplash.com/photos/4kjtbC-wMHs | free |
