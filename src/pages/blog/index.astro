@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import BlockRenderer from '../../components/BlockRenderer.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { posts } from '../../data/posts';
+
+const list = [{ _type: 'articles', _key: 'blog-list', heading: 'Najnowsze artykuły', posts }];
+---
+
+<BaseLayout
+  title="Wiedza o olejach i smarach – poradniki | Maxol"
+  description="Praktyczne poradniki o doborze olejów, smarów i płynów eksploatacyjnych dla warsztatów, flot, rolnictwa i przemysłu."
+>
+  <PageHero
+    title="Wiedza o olejach i smarach"
+    lead="Praktyczne poradniki dla warsztatów, flot, rolnictwa i przemysłu."
+    crumbs={[{ label: 'Blog' }]}
+  />
+  <BlockRenderer blocks={list} />
+  <CtaBand />
+</BaseLayout>

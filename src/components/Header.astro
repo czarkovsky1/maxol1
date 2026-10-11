@@ -8,9 +8,10 @@ import { siteSettings, mainNav, utilityNav, primaryCta } from '../data/site';
 
 interface Props {
   transparent?: boolean;
+  ctaHref?: string;
 }
 
-const { transparent = false } = Astro.props;
+const { transparent = false, ctaHref = primaryCta.href } = Astro.props;
 const current = Astro.url.pathname;
 ---
 
@@ -49,7 +50,7 @@ const current = Astro.url.pathname;
         </ul>
       </nav>
 
-      <a class="btn btn--primary bar__cta" href={primaryCta.href}>{primaryCta.label}</a>
+      <a class="btn btn--primary bar__cta" href={ctaHref}>{primaryCta.label}</a>
 
       <button class="burger" type="button" aria-expanded="false" aria-controls="mobile-menu" data-burger>
         <span class="visually-hidden">Menu</span>

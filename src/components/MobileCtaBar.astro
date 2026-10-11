@@ -1,11 +1,13 @@
 ---
 // Pasek na dole ekranu telefonu: dwie najważniejsze akcje zawsze pod kciukiem.
 import { siteSettings, primaryCta } from '../data/site';
+
+const { ctaHref = primaryCta.href } = Astro.props as { ctaHref?: string };
 ---
 
 <div class="mobile-cta">
   <a class="mobile-cta__call" href={siteSettings.phone.href}>Zadzwoń</a>
-  <a class="mobile-cta__ask" href={primaryCta.href}>{primaryCta.label}</a>
+  <a class="mobile-cta__ask" href={ctaHref}>{primaryCta.label}</a>
 </div>
 
 <style>

@@ -1,0 +1,120 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { homePage } from '../data/home';
+import heroImg from '../assets/legacy/content-dobierz-olej.webp';
+
+const finder = homePage.blocks.find((b) => b._type === 'oilFinder');
+const links = finder && 'links' in finder ? finder.links : [];
+const descriptions: Record<string, string> = {
+  Castrol: 'Wyszukiwarka produktów Castrol: wskaż pojazd lub maszynę, a otrzymasz rekomendowane oleje i płyny.',
+  'ORLEN OIL': 'Dobór olejów ORLEN OIL do samochodów osobowych, ciężarowych, maszyn rolniczych i motocykli.',
+  'Total / Elf': 'Narzędzie TotalEnergies Lubconsult do doboru olejów Total i Elf.',
+  Shell: 'Shell LubeMatch — dobór olejów silnikowych i środków smarnych Shell.',
+};
+---
+
+<BaseLayout
+  title="Dobierz olej do pojazdu lub maszyny – Maxol"
+  description="Sprawdź, jak łatwo dobrać odpowiedni olej do swojego pojazdu lub maszyny. Doborniki producentów Castrol, ORLEN OIL, Total i Shell oraz pomoc doradców Maxol."
+>
+  <PageHero
+    title="Dobierz olej"
+    lead="Skorzystaj z wyszukiwarek środków smarnych przygotowanych przez producentów. Jeśli masz wątpliwości, nasi doradcy pomogą dobrać produkt."
+    crumbs={[{ label: 'Dobierz olej' }]}
+    image={{ src: heroImg, alt: 'Mechanik przy silniku samochodu' }}
+  />
+
+  <section class="section" aria-labelledby="finders-heading">
+    <div class="container">
+      <h2 id="finders-heading" class="finders__title">Doborniki producentów</h2>
+      <ul class="finders" role="list">
+        {
+          links.map((l) => (
+            <li class="finder-card">
+              <h3 class="finder-card__name">{l.label.replace(' ', ' ')}</h3>
+              <p class="finder-card__text">{descriptions[l.label.replace(' ', ' ')] ?? ''}</p>
+              <a class="btn btn--ghost finder-card__btn" href={l.href} target="_blank" rel="noopener">
+                Otwórz dobornik<span class="visually-hidden"> {l.label} (nowa karta)</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="finders__note">
+        Doborniki prowadzą do stron producentów. Wyniki mają charakter informacyjny — przed zakupem sprawdź zalecenia producenta pojazdu lub
+        maszyny albo <a href="/kontakt">zapytaj naszego doradcę</a>.
+      </p>
+    </div>
+  </section>
+
+  <CtaBand heading="Nie znalazłeś odpowiedniego oleju?" text="Podaj markę i model pojazdu lub maszyny, a doradca Maxol wskaże właściwy produkt." />
+</BaseLayout>
+
+<style>
+  .finders__title {
+    margin-bottom: 2rem;
+    font-size: var(--fs-h2);
+    color: var(--c-heading);
+  }
+
+  .finders {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .finder-card {
+    display: flex;
+    flex-direction: column;
+    padding: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+    background: var(--c-bg-alt);
+  }
+
+  .finder-card__name {
+    font-size: var(--fs-h3);
+    color: var(--c-heading);
+  }
+
+  .finder-card__text {
+    margin-top: 0.75rem;
+    color: var(--c-muted);
+  }
+
+  .finder-card__btn {
+    margin-top: auto;
+    align-self: flex-start;
+  }
+
+  .finder-card__text {
+    margin-bottom: 1.5rem;
+  }
+
+  .finders__note {
+    max-width: 72ch;
+    margin-top: 2rem;
+    font-size: var(--fs-small);
+    color: var(--c-muted);
+  }
+
+  .finders__note a {
+    color: var(--c-heading);
+    font-weight: 600;
+  }
+
+  @media (max-width: 1100px) {
+    .finders {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 600px) {
+    .finders {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

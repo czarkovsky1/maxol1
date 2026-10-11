@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import ServiceCards from '../../components/ServiceCards.astro';
+import BlockRenderer from '../../components/BlockRenderer.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { services } from '../../data/services';
+import { homePage } from '../../data/home';
+
+// Blok „Dla kogo” ze strony głównej, ale z przyciskiem prowadzącym do /kontakt
+const industries = homePage.blocks
+  .filter((b) => b._type === 'industries')
+  .map((b) => ({ ...b, cta: { label: 'Zapytaj o ofertę', href: '/kontakt' } }));
+---
+
+<BaseLayout
+  title="Oferta Maxol – oleje, smary, płyny i chemia samochodowa"
+  description="Szeroka oferta Maxol obejmuje oleje silnikowe, przemysłowe i rolnicze, smary, płyny chłodnicze, chemię samochodową i opakowania od topowych producentów."
+>
+  <PageHero
+    title="Oferta"
+    lead="Oleje i środki smarne producentów krajowych i zagranicznych, takich jak ORLEN OIL, Castrol, Shell, Total czy Mobil, a także płyny eksploatacyjne, chemia samochodowa i opakowania."
+    crumbs={[{ label: 'Oferta' }]}
+  />
+  <ServiceCards items={services} />
+  <BlockRenderer blocks={industries} />
+  <CtaBand />
+</BaseLayout>

@@ -39,7 +39,8 @@ export const utilityNav = [
   { label: 'Kontakt', href: '/kontakt' },
 ];
 
-export const primaryCta = { label: 'Zapytaj o ofertę', href: '#kontakt' };
+// Na stronach głównych przycisk przewija do formularza (#kontakt), na podstronach prowadzi do /kontakt
+export const primaryCta = { label: 'Zapytaj o ofertę', href: '/kontakt' };
 
 // Indeksowanie w Google: wyłączone, dopóki strona nie wystartuje na docelowej domenie.
 // Przy publikacji: ustaw w Vercelu zmienną PUBLIC_ALLOW_INDEXING=true

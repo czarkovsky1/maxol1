@@ -1,0 +1,79 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import BlockRenderer from '../components/BlockRenderer.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { homePage } from '../data/home';
+import quatorImg from '../assets/legacy/content-quator.webp';
+
+// Blok marek ze strony głównej z kotwicą #katalogi (link „Katalogi PDF” w nagłówku)
+const brands = homePage.blocks.filter((b) => b._type === 'brands').map((b) => ({ ...b, anchor: 'katalogi' }));
+---
+
+<BaseLayout
+  title="Marki i katalogi – ORLEN OIL, Castrol, Shell, Quator | Maxol"
+  description="Autoryzowany dystrybutor ORLEN OIL i Castrol. W ofercie także Shell, Total, Elf, Mobil, Quator i Amtra. Pobierz aktualne katalogi produktów w PDF."
+>
+  <PageHero
+    title="Marki i katalogi"
+    lead="Oleje i środki smarne sprawdzonych producentów. Pobierz aktualne katalogi produktów dostępnych w sprzedaży."
+    crumbs={[{ label: 'Marki' }]}
+  />
+
+  <BlockRenderer blocks={brands} />
+
+  <section class="section" id="quator" aria-labelledby="quator-heading">
+    <div class="container brand-feature">
+      <div class="brand-feature__media">
+        <Image src={quatorImg} alt="Olej Quator wlewany do silnika" widths={[480, 770]} sizes="(max-width: 900px) 100vw, 45vw" />
+      </div>
+      <div class="prose">
+        <h2 id="quator-heading">Oleje Quator</h2>
+        <p>
+          Quator to marka, która od lat dostarcza oleje smarujące o wysokiej wydajności, dostosowane do potrzeb wymagających użytkowników.
+          W ofercie Maxol znajdziesz szeroką gamę produktów Quator przeznaczonych zarówno dla motoryzacji, jak i przemysłu.
+        </p>
+        <p>
+          Oleje tej marki minimalizują tarcie, chronią przed zużyciem i zapewniają długą żywotność kluczowych komponentów mechanicznych.
+          Zmniejszają też zużycie paliwa i emisję spalin, co czyni je ekologicznym wyborem.
+        </p>
+        <p>
+          <a href="https://maxol.pl/images/pdf/katalog-quator.pdf" target="_blank" rel="noopener">Pobierz katalog Quator (PDF, 3,2&nbsp;MB)</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand heading="Nie wiesz, którą markę wybrać?" text="Doradzimy produkt odpowiedni do Twoich pojazdów i maszyn, niezależnie od producenta." />
+</BaseLayout>
+
+<style>
+  .brand-feature {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 2.5rem 5rem;
+    align-items: center;
+  }
+
+  .brand-feature__media {
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+  }
+
+  .brand-feature__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .brand-feature .prose h2 {
+    margin-top: 0;
+  }
+
+  @media (max-width: 900px) {
+    .brand-feature {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

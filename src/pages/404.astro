@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+---
+
+<BaseLayout title="Nie znaleziono strony – Maxol" noindex>
+  <PageHero
+    title="Nie znaleźliśmy tej strony"
+    lead="Strona mogła zostać przeniesiona albo adres zawiera literówkę. Sprawdź ofertę lub skontaktuj się z nami."
+    crumbs={[{ label: 'Błąd 404' }]}
+  >
+    <div class="nf-actions">
+      <a class="btn btn--primary" href="/oferta">Zobacz ofertę</a>
+      <a class="btn btn--ghost" href="/">Strona główna</a>
+    </div>
+  </PageHero>
+</BaseLayout>
+
+<style>
+  .nf-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+</style>

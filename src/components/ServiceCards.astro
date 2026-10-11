@@ -1,0 +1,118 @@
+---
+// Karty kategorii oferty (lista na /oferta i „Pozostałe kategorie” na podstronach).
+import { Image } from 'astro:assets';
+import type { Service } from '../data/services';
+
+interface Props {
+  items: readonly Service[];
+  heading?: string;
+}
+
+const { items, heading } = Astro.props;
+const id = heading ? `cards-${heading.length}` : undefined;
+---
+
+<section class="section cards-section" aria-labelledby={id}>
+  <div class="container">
+    {heading && <h2 id={id} class="cards-section__title">{heading}</h2>}
+    <ul class="cards" role="list">
+      {
+        items.map((item) => (
+          <li>
+            <a class="scard" href={`/oferta/${item.slug}`}>
+              <div class="scard__media">
+                <Image src={item.image.src} alt={item.image.alt} widths={[400, 768]} sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 420px" />
+              </div>
+              <div class="scard__body">
+                <h3 class="scard__title">{item.title}</h3>
+                <p class="scard__text">{item.excerpt}</p>
+                <span class="link-arrow scard__more">
+                  Zobacz
+                  <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+                    <path d="M3 9h11M10 4.5L14.5 9 10 13.5" fill="none" stroke="currentColor" stroke-width="2" />
+                  </svg>
+                </span>
+              </div>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .cards-section__title {
+    margin-bottom: clamp(2rem, 1.5rem + 2vw, 3rem);
+    font-size: var(--fs-h2);
+    color: var(--c-heading);
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .scard {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--c-bg-alt);
+    text-decoration: none;
+  }
+
+  .scard__media {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: var(--c-navy-900);
+  }
+
+  .scard__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s var(--ease);
+  }
+
+  .scard:hover .scard__media img {
+    transform: scale(1.04);
+  }
+
+  .scard__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+  }
+
+  .scard__title {
+    font-size: var(--fs-h3);
+    color: var(--c-heading);
+  }
+
+  .scard__text {
+    margin-top: 0.75rem;
+    color: var(--c-muted);
+  }
+
+  .scard__more {
+    margin-top: auto;
+    padding-top: 1.5rem;
+  }
+
+  @media (max-width: 1100px) {
+    .cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 700px) {
+    .cards {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

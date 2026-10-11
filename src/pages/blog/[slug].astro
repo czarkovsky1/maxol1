@@ -1,0 +1,111 @@
+---
+// Wpis blogowy. Docelowo dokument „Wpis blogowy” z Sanity (Portable Text).
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import BlockRenderer from '../../components/BlockRenderer.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { posts, type Post } from '../../data/posts';
+import { services } from '../../data/services';
+
+export function getStaticPaths() {
+  return posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}
+
+const { post } = Astro.props as { post: Post };
+const related = services.filter((s) => post.related.includes(s.slug));
+const more = [{ _type: 'articles', _key: 'more', heading: 'Przeczytaj także', posts: posts.filter((p) => p.slug !== post.slug) }];
+---
+
+<BaseLayout title={`${post.title} | Maxol`} description={post.excerpt}>
+  <PageHero
+    title={post.title}
+    lead={post.excerpt}
+    crumbs={[{ label: 'Blog', href: '/blog' }, { label: post.title }]}
+    image={post.image}
+  />
+
+  <section class="section">
+    <div class="container article">
+      <article class="prose article__body">
+        {
+          post.sections.map((s) => (
+            <>
+              {'heading' in s && s.heading && <h2>{s.heading}</h2>}
+              {s.paragraphs.map((p) => <p>{p}</p>)}
+            </>
+          ))
+        }
+      </article>
+
+      <aside class="article__aside" aria-label="Powiązana oferta">
+        <h2 class="article__aside-title">Powiązana oferta</h2>
+        <ul role="list">
+          {related.map((s) => <li><a href={`/oferta/${s.slug}`}>{s.title}</a></li>)}
+        </ul>
+        <a class="btn btn--primary article__aside-btn" href="/kontakt">Zapytaj doradcę</a>
+      </aside>
+    </div>
+  </section>
+
+  <BlockRenderer blocks={more} />
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .article {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 0.8fr);
+    gap: 2.5rem 5rem;
+    align-items: start;
+  }
+
+  .article__body {
+    font-size: 1.125rem;
+  }
+
+  .article__body > :first-child {
+    margin-top: 0;
+  }
+
+  .article__aside {
+    position: sticky;
+    top: calc(var(--header-h) + 2rem);
+    padding: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+    background: var(--c-bg-alt);
+  }
+
+  .article__aside-title {
+    font-size: 1.25rem;
+    color: var(--c-heading);
+  }
+
+  .article__aside ul {
+    margin: 1rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .article__aside li + li {
+    margin-top: 0.5rem;
+  }
+
+  .article__aside a:not(.btn) {
+    font-weight: 600;
+    color: var(--c-heading);
+  }
+
+  .article__aside-btn {
+    margin-top: 1.5rem;
+    width: 100%;
+  }
+
+  @media (max-width: 900px) {
+    .article {
+      grid-template-columns: 1fr;
+    }
+
+    .article__aside {
+      position: static;
+    }
+  }
+</style>

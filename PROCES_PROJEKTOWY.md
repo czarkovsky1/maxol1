@@ -129,6 +129,7 @@ Obecne: granat `#0A4A7C` (dominujący), żółty `#FAD900` (akcent w „M” i k
 | 2 | Wywiad z projektantem (fonty: Archivo; zdjęcia/logo — częściowo) | ✅ | 2026-10-11 |
 | 3 | Struktura strony głównej | ✅ | 2026-10-11 |
 | 4 | Budowa sekcji strony głównej (komponenty Astro, dane przykładowe) | ✅ | 2026-10-11 |
+| 4b | Podstrony (makiety na treściach ze starej strony) | ✅ | 2026-10-11 |
 | 5 | Przegląd całości | ⏳ | |
 | T1 | Schematy Sanity + Studio /studio | ⏳ | |
 | T2 | Podłączenie bloków i podstron do Sanity (GROQ, dynamiczne trasy) | ⏳ | |
@@ -186,7 +187,10 @@ Legenda: ⏳ Oczekuje · 🔄 W toku · ✅ Zakończone · ⛔ Wstrzymane
 - [ ] Zdjęcia kategorii oferty — tymczasowo ze starej strony (stockowe); docelowo własne lub nowe
 - [ ] Zdjęcie do sekcji Zaplecze — wygenerowane AI (`src/assets/generated/zaplecze-ai.jpg`); potrzebne prawdziwe zdjęcia Centrum Dystrybucji, floty i linii rozlewczych
 - [ ] PRZY STARCIE: ustawić w Vercelu PUBLIC_ALLOW_INDEXING=true i usunąć nagłówek X-Robots-Tag z vercel.json
-- [ ] Wpisy bloga na stronie głównej to propozycje tematów (treść robocza) — artykuły do napisania
+- [ ] Artykuły na blogu (3) to SZKICE robocze napisane na podstawie ogólnej wiedzy branżowej — do weryfikacji i akceptacji przez Maxol przed publikacją
+- [ ] Tekst „O nas” na starej stronie podawał „ponad 1200 Klientów” — na nowej stronie, zgodnie z decyzją, 9000+ stałych odbiorców; warto potwierdzić u klienta
+- [ ] Certyfikaty ORLEN OIL i Castrol oraz ryciny butelek — linki PDF do starej strony; przenieść do Sanity przed zmianą domeny
+- [ ] Dokumenty prawne przeniesione 1:1 ze starej strony (aktualizacja 30.10.2024) — po wdrożeniu nowego formularza i ewentualnej analityki/cookies poprosić klienta/prawnika o aktualizację (m.in. wzmianka o reCAPTCHA)
 - [ ] Linki do doborników producentów (Castrol, ORLEN OIL, Total, Shell) — sprawdzić aktualność przed startem
 - [ ] Katalogi PDF — tymczasowo linki do maxol.pl/images/pdf/…; przenieść pliki do Sanity przed zmianą domeny (inaczej linki przestaną działać)
 - [ ] Logotypy Shell, Total/Elf, Mobil, Quator, Amtra — obecnie nazwy tekstem; potrzebne oficjalne pliki (monochromatyczne)
@@ -225,6 +229,9 @@ Legenda: ⏳ Oczekuje · 🔄 W toku · ✅ Zakończone · ⛔ Wstrzymane
 | 2026-10-11 | Kod w repozytorium github.com/czarkovsky1/maxol1 (gałąź main); hosting Vercel podpina projektant | Projektant |
 | 2026-10-11 | Dwie wersje strony głównej: „/” (logo) z wideo w hero, „/strona-glowna” (pozycja „Strona główna” w menu) z kroplą three.js; reszta sekcji wspólna. ~~/o-nas jako plac zabaw~~ (nieaktualne) | Projektant |
 | 2026-10-11 | Indeksowanie wyłączone na całej stronie do czasu startu (meta noindex + nagłówek X-Robots-Tag w vercel.json) | Projektant |
+| 2026-10-11 | Podstrony wg struktury starej strony; formularze jako makiety (bez wysyłki); dwie wersje hero tylko na stronach głównych | Projektant |
+| 2026-10-11 | Przycisk „Zapytaj o ofertę” w nagłówku: na stronach głównych przewija do formularza, na podstronach prowadzi do /kontakt; podstrony kończą się granatowym paskiem CTA | Claude (spójność nawigacji) |
+| 2026-10-11 | Stare adresy bez odpowiednika → przekierowania 301 w vercel.json: /pliki-do-pobrania → /marki#katalogi, /quator → /marki#quator, /promocje → /oferta, /index.php → / | Claude (ciągłość SEO) |
 | 2026-10-11 | Tematy SEO (JSON-LD, OG, canonical itd.) odkładamy na koniec, po warstwie wizualnej; teraz: struktura strony głównej + wygląd | Projektant |
 
 ## 7. Otwarte pytania
@@ -318,3 +325,13 @@ Legenda: ⏳ Oczekuje · 🔄 W toku · ✅ Zakończone · ⛔ Wstrzymane
 - Poprawki mobilne: niełamliwe „ORLEN OIL”, wcześniejsze zapalanie osi kroków.
 **Kontrola:** desktop 1440/1240 px, telefon 375 px (brak poziomego przewijania), test walidacji formularza (puste → 5 komunikatów i fokus na pierwszym polu; poprawne → komunikat o wersji testowej), `astro check` 0 błędów.
 **Następne kroki:** etap 5 — przegląd całości (spójność, dostępność), potem schematy Sanity.
+
+### Krok 4i — Pozostałe podstrony (2026-10-11)
+**Polecenie:** zrobić pozostałe podstrony na podstawie materiałów i struktury starej strony; formularze jako makiety; dwie wersje hero tylko na stronach głównych.
+**Co zrobiono (22 strony statyczne):**
+- Wspólne komponenty: `PageHero` (okruszki, H1, wstęp, zdjęcie), `CtaBand` (granatowy pasek z zaproszeniem do kontaktu), `ServiceCards`, `Certificates`, `LegalPage`, styl `.prose` dla długich tekstów.
+- Dane: `src/data/services.ts` (7 kategorii: treści, H1, tytuły i opisy meta przeniesione ze starej strony, marki, ryciny opakowań), `src/data/posts.ts` (3 szkice artykułów).
+- Strony: `/o-nas` (tekst ze starej strony, zasięg z mapą, zaplecze, certyfikaty PDF), `/oferta` + 7× `/oferta/[slug]` (adresy jak na starej stronie; opis, marki, boczna ramka z CTA, ryciny dla opakowań, pozostałe kategorie), `/marki` (katalogi #katalogi, sekcja Quator #quator), `/dobierz-olej` (4 doborniki producentów), `/blog` + 3 wpisy, `/kontakt` (formularz-makieta, działy, przedstawiciele, dane firmy, link do mapy), `/polityka-prywatnosci`, `/polityka-cookies`, `/obowiazek-informacyjny` (treść ze starej strony w Markdown, e-mail RODO mbujnowski@maxol.pl), `404`.
+- Przekierowania 301 dla starych adresów bez odpowiednika (vercel.json).
+**Kontrola:** build 22 stron, automatyczny test linków wewnętrznych (0 błędnych), `astro check` 0 błędów, przegląd desktop 1440 px, test 14 stron na 375 px (brak poziomego przewijania), poprawka gramatyki („Zapytaj o chemię samochodową”).
+**Następne kroki:** przegląd całości (etap 5), potem schematy Sanity i podłączenie treści.

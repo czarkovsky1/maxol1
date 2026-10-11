@@ -1,0 +1,87 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import BlockRenderer from '../components/BlockRenderer.astro';
+import Certificates from '../components/Certificates.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { homePage } from '../data/home';
+import heroImg from '../assets/legacy/bg-parallax-subpage-o-nas.webp';
+import certOrlen from '../assets/legacy/certyfikat-orlen.jpg';
+import certCastrol from '../assets/legacy/certyfikat-castrol.webp';
+
+const pick = (type: string) => homePage.blocks.filter((b) => b._type === type);
+const PDF = 'https://maxol.pl/images/design/pdf';
+---
+
+<BaseLayout
+  title="O firmie Maxol z Suchedniowa – dystrybutor olejów i smarów"
+  description="35 lat doświadczenia, szeroki wybór olejów i smarów od czołowych producentów. Certyfikowane, niezawodne produkty dla branży motoryzacyjnej i przemysłowej."
+>
+  <PageHero
+    title="O firmie Maxol"
+    lead="Od 35 lat dostarczamy oleje i środki smarne firmom z branży motoryzacyjnej, transportowej, rolniczej i przemysłowej."
+    crumbs={[{ label: 'O nas' }]}
+    image={{ src: heroImg, alt: 'Narzędzia warsztatowe' }}
+  />
+
+  <section class="section">
+    <div class="container about">
+      <h2 class="about__title">Kim jesteśmy</h2>
+      <div class="prose">
+        <p>
+          Maxol to firma z 35-letnim doświadczeniem, która specjalizuje się w dystrybucji najwyższej jakości olejów i środków smarnych od
+          renomowanych producentów, takich jak ORLEN&nbsp;OIL, Castrol, Shell, Total czy Mobil. Jako autoryzowany dystrybutor ORLEN&nbsp;OIL oraz
+          Castrol zapewniamy szeroki wybór produktów dla motoryzacji, rolnictwa oraz przemysłu ciężkiego.
+        </p>
+        <p>
+          W ofercie mamy także smary, płyny eksploatacyjne, chemię samochodową oraz akcesoria. Obsługujemy klientów ze wszystkich segmentów
+          rynku: od motoryzacji osobowej, przez transport ciężarowy, po sektor przemysłowy i rolniczy.
+        </p>
+        <p>
+          Zaopatrujemy hurt, podhurt, sklepy motoryzacyjne i przemysłowe, stacje paliw i stacje kontroli pojazdów, warsztaty, firmy
+          transportowe i gospodarstwa rolne w siedmiu województwach. Świadczymy usługi dla przemysłu w zakresie gospodarki smarowej.
+        </p>
+        <p>
+          Zatrudniamy ponad 30 osób, w tym 10 w dziale handlowym. Nasi pracownicy stale podnoszą kwalifikacje, uczestnicząc w szkoleniach
+          branży olejowej.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <BlockRenderer blocks={[...pick('reach'), ...pick('facilities')]} />
+
+  <Certificates
+    heading="Certyfikaty autoryzowanego dystrybutora"
+    text="Jesteśmy autoryzowanym dystrybutorem ORLEN OIL i Castrol. Certyfikaty możesz pobrać w PDF."
+    items={[
+      { title: 'Certyfikat ORLEN OIL', image: certOrlen, alt: 'Certyfikat autoryzowanego dystrybutora ORLEN OIL dla Maxol', pdf: `${PDF}/cert-orlen.pdf`, size: '1 MB' },
+      { title: 'Certyfikat Castrol', image: certCastrol, alt: 'Certyfikat autoryzowanego dystrybutora Castrol dla Maxol', pdf: `${PDF}/cert-castrol.pdf`, size: '590 kB' },
+    ]}
+  />
+
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .about {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: 2rem 5rem;
+  }
+
+  .about__title {
+    font-size: var(--fs-h2);
+    color: var(--c-heading);
+  }
+
+  .about .prose {
+    font-size: 1.125rem;
+  }
+
+  @media (max-width: 900px) {
+    .about {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

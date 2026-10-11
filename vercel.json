@@ -4,5 +4,11 @@
       "source": "/(.*)",
       "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
     }
+  ],
+  "redirects": [
+    { "source": "/pliki-do-pobrania", "destination": "/marki#katalogi", "permanent": true },
+    { "source": "/quator", "destination": "/marki#quator", "permanent": true },
+    { "source": "/promocje", "destination": "/oferta", "permanent": true },
+    { "source": "/index.php", "destination": "/", "permanent": true }
   ]
 }

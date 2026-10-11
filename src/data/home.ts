@@ -10,60 +10,10 @@ import logoCastrol from '../assets/legacy/logo-castrol-stopka.webp';
 
 // Katalogi PDF: tymczasowo linki do starej strony, docelowo pliki w Sanity
 const CATALOGS = 'https://maxol.pl/images/pdf';
-import imgMoto from '../assets/legacy/photo-offer.webp';
-import imgChemia from '../assets/legacy/photo-offer-1.webp';
-import imgPrzemysl from '../assets/legacy/photo-offer-2.webp';
-import imgSmary from '../assets/legacy/photo-offer-3.webp';
-import imgRolnictwo from '../assets/legacy/photo-offer-4.webp';
-import imgPlyny from '../assets/legacy/photo-offer-5.webp';
-// Zdjęcie przykładowe wygenerowane AI (Higgsfield) — do zastąpienia zdjęciem klienta
-import imgOpakowania from '../assets/generated/opakowania-ai.jpg';
 
-// Docelowo: dokumenty typu „Usługa” (kategorie oferty), wybierane referencją.
-export const services = [
-  {
-    slug: 'oleje-dla-przemyslu',
-    title: 'Oleje dla przemysłu',
-    excerpt: 'Oleje do maszyn w zakładach produkcyjnych, hutach i fabrykach, z doradztwem w doborze.',
-    image: { src: imgPrzemysl, alt: 'Olej przelewany z beczki' },
-  },
-  {
-    slug: 'oleje-dla-motoryzacji',
-    title: 'Oleje dla motoryzacji',
-    excerpt: 'Oleje silnikowe do aut osobowych, ciężarowych i motocykli: syntetyczne, półsyntetyczne i mineralne.',
-    image: { src: imgMoto, alt: 'Tłoki silnika smarowane olejem' },
-  },
-  {
-    slug: 'oleje-dla-rolnictwa',
-    title: 'Oleje dla rolnictwa',
-    excerpt: 'Oleje do ciągników, kombajnów i maszyn żniwnych, na intensywny sezon i okres przestoju.',
-    image: { src: imgRolnictwo, alt: 'Olej wlewany z kanistra' },
-  },
-  {
-    slug: 'smary',
-    title: 'Smary',
-    excerpt: 'Smary plastyczne: uniwersalne, wysokotemperaturowe i wodoodporne, dla motoryzacji i przemysłu.',
-    image: { src: imgSmary, alt: 'Smarowanie łożyska tocznego' },
-  },
-  {
-    slug: 'plyny-chlodnicze',
-    title: 'Płyny chłodnicze',
-    excerpt: 'Płyny na bazie glikolu etylenowego i propylenowego do samochodów i maszyn.',
-    image: { src: imgPlyny, alt: 'Kanistry płynu chłodniczego ORLEN\u00A0OIL Petrygo' },
-  },
-  {
-    slug: 'kosmetyki-i-chemia-samochodowa',
-    title: 'Chemia samochodowa',
-    excerpt: 'Chemia, kosmetyki i akcesoria Amtra do mycia, ochrony i pielęgnacji pojazdów.',
-    image: { src: imgChemia, alt: 'Nakładanie powłoki ochronnej na lakier samochodu' },
-  },
-  {
-    slug: 'opakowania',
-    title: 'Opakowania',
-    excerpt: 'Butelki z tworzyw z dozownikiem, 1 l i 0,5 l, dla branży chemicznej, motoryzacyjnej i ogrodniczej.',
-    image: { src: imgOpakowania, alt: 'Butelki 1 l i 0,5 l z komorą dozującą' },
-  },
-];
+export { services } from './services';
+import { services } from './services';
+import { posts } from './posts';
 
 export const homePage = {
   title: 'Strona główna',
@@ -235,27 +185,7 @@ export const homePage = {
       heading: 'Wiedza o olejach i smarach',
       text: 'Praktyczne poradniki dla warsztatów, flot, rolnictwa i przemysłu.',
       link: { label: 'Wszystkie artykuły', href: '/blog' },
-      // TREŚĆ ROBOCZA: propozycje tematów — artykuły do napisania
-      posts: [
-        {
-          slug: 'jak-dobrac-olej-do-ciagnika',
-          title: 'Jak dobrać olej do ciągnika i kombajnu',
-          excerpt: 'Na co patrzeć w normach i specyfikacjach producenta maszyny, żeby olej wytrzymał cały sezon.',
-          image: { src: imgRolnictwo, alt: 'Olej wlewany z kanistra' },
-        },
-        {
-          slug: 'glikol-etylenowy-czy-propylenowy',
-          title: 'Glikol etylenowy czy propylenowy?',
-          excerpt: 'Czym różnią się płyny chłodnicze na bazie obu glikoli i którego użyć w pojeździe lub maszynie.',
-          image: { src: imgPlyny, alt: 'Kanistry płynu chłodniczego' },
-        },
-        {
-          slug: 'gospodarka-smarowa-w-zakladzie',
-          title: 'Gospodarka smarowa w zakładzie: od czego zacząć',
-          excerpt: 'Jak uporządkować dobór i harmonogram smarowania maszyn, żeby ograniczyć przestoje.',
-          image: { src: imgSmary, alt: 'Smarowanie łożyska tocznego' },
-        },
-      ],
+      posts,
     },
     {
       _type: 'faq',

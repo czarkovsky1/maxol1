@@ -1,0 +1,87 @@
+---
+// Granatowy pasek na końcu podstron: zaproszenie do kontaktu + telefon.
+import { siteSettings } from '../data/site';
+
+interface Props {
+  heading?: string;
+  text?: string;
+}
+
+const {
+  heading = 'Porozmawiajmy o dostawach dla Twojej firmy',
+  text = 'Przedstawiciel z Twojego regionu dobierze produkty i przygotuje ofertę.',
+} = Astro.props;
+---
+
+<section class="cta-band" aria-labelledby="cta-band-heading">
+  <div class="container cta-band__inner">
+    <div>
+      <h2 id="cta-band-heading" class="cta-band__title">{heading}</h2>
+      <p class="cta-band__text">{text}</p>
+    </div>
+    <div class="cta-band__actions">
+      <a class="btn btn--primary" href="/kontakt">Zapytaj o ofertę</a>
+      <a class="cta-band__phone" href={siteSettings.phone.href}>
+        lub zadzwoń: <strong>{siteSettings.phone.display}</strong>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-band {
+    padding-block: clamp(3.5rem, 2.5rem + 4vw, 6rem);
+    background: var(--c-navy-900);
+    color: #fff;
+  }
+
+  .cta-band__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: 2rem 4rem;
+    align-items: center;
+  }
+
+  .cta-band__title {
+    max-width: 20ch;
+    font-size: var(--fs-h2);
+  }
+
+  .cta-band__text {
+    max-width: 50ch;
+    margin-top: 1rem;
+    color: rgb(255 255 255 / 0.78);
+  }
+
+  .cta-band__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.75rem;
+    justify-self: end;
+  }
+
+  .cta-band__phone {
+    color: rgb(255 255 255 / 0.78);
+    text-decoration: none;
+  }
+
+  .cta-band__phone strong {
+    color: #fff;
+    white-space: nowrap;
+  }
+
+  .cta-band__phone:hover strong {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 900px) {
+    .cta-band__inner {
+      grid-template-columns: 1fr;
+    }
+
+    .cta-band__actions {
+      justify-self: start;
+    }
+  }
+</style>

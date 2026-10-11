@@ -1,0 +1,29 @@
+---
+// Wspólny szablon dokumentów prawnych (treść w src/content/legal/*.md).
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from './PageHero.astro';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<BaseLayout title={`${title} – Maxol`} description={description}>
+  <PageHero title={title} crumbs={[{ label: title }]} />
+  <section class="section">
+    <div class="container">
+      <div class="prose legal">
+        <slot />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .legal :global(h2:first-child) {
+    margin-top: 0;
+  }
+</style>

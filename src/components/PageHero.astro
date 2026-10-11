@@ -1,0 +1,121 @@
+---
+// Nagłówek podstrony: okruszki (breadcrumbs), H1, wstęp i opcjonalne zdjęcie.
+// Okruszki posłużą później do JSON-LD BreadcrumbList.
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  title: string;
+  lead?: string;
+  crumbs?: { label: string; href?: string }[];
+  image?: { src: ImageMetadata; alt: string };
+}
+
+const { title, lead, crumbs = [], image } = Astro.props;
+const trail = [{ label: 'Strona główna', href: '/' }, ...crumbs];
+---
+
+<section class:list={['page-hero', { 'page-hero--image': image }]}>
+  <div class="container page-hero__inner">
+    <div class="page-hero__copy">
+      <nav class="crumbs" aria-label="Ścieżka nawigacji">
+        <ol>
+          {
+            trail.map((c, i) => (
+              <li>
+                {c.href && i < trail.length - 1 ? <a href={c.href}>{c.label}</a> : <span aria-current="page">{c.label}</span>}
+              </li>
+            ))
+          }
+        </ol>
+      </nav>
+      <h1 class="page-hero__title">{title}</h1>
+      {lead && <p class="page-hero__lead">{lead}</p>}
+      <slot />
+    </div>
+    {
+      image && (
+        <div class="page-hero__media">
+          <Image src={image.src} alt={image.alt} widths={[480, 768, 1100]} sizes="(max-width: 900px) 100vw, 46vw" loading="eager" fetchpriority="high" />
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .page-hero {
+    padding-block: clamp(2.5rem, 2rem + 3vw, 4.5rem) clamp(3rem, 2.5rem + 3vw, 5rem);
+    background: var(--c-bg-alt);
+  }
+
+  .page-hero__inner {
+    display: grid;
+    gap: 2.5rem 4rem;
+    align-items: center;
+  }
+
+  .page-hero--image .page-hero__inner {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0;
+    margin: 0 0 1.5rem;
+    padding: 0;
+    list-style: none;
+    font-size: var(--fs-small);
+    color: var(--c-muted);
+  }
+
+  .crumbs li + li::before {
+    content: '/';
+    margin-inline: 0.625rem;
+    color: #9aa6b1;
+  }
+
+  .crumbs a {
+    color: var(--c-heading);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .crumbs a:hover {
+    text-decoration: underline;
+  }
+
+  .page-hero__title {
+    max-width: 18ch;
+    font-size: clamp(2.25rem, 1.5rem + 3vw, 4rem);
+    line-height: 1.04;
+    letter-spacing: -0.03em;
+    color: var(--c-heading);
+  }
+
+  .page-hero__lead {
+    max-width: 56ch;
+    margin-top: 1.25rem;
+    font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
+    color: var(--c-muted);
+  }
+
+  .page-hero__media {
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    background: var(--c-navy-900);
+  }
+
+  .page-hero__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (max-width: 900px) {
+    .page-hero--image .page-hero__inner {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

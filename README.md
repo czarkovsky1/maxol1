@@ -27,12 +27,14 @@ Podgląd: http://localhost:4321
 
 ```
 src/
-  pages/            podstrony (index = strona główna z wideo, strona-glowna = wersja z kroplą three.js)
+  pages/            podstrony (index = strona główna z wideo, strona-glowna = wersja z kroplą three.js,
+                    oferta/[slug], blog/[slug], o-nas, marki, dobierz-olej, kontakt, dokumenty prawne)
+  content/legal/    dokumenty prawne w Markdown
   layouts/          szkielet strony (head, nagłówek, pasek mobilny)
   components/
     blocks/         bloki sekcji (hero, partnerzy, zasięg, oferta, …) — 1 blok = 1 komponent
     BlockRenderer   zamienia listę bloków na komponenty
-  data/             treści przykładowe w kształcie przyszłych dokumentów Sanity
+  data/             treści (site, home, services, posts) w kształcie przyszłych dokumentów Sanity
   scripts/liquid/   hero z kroplą oleju (three.js + shader)
   styles/           zmienne (kolory, fonty, odstępy) i style globalne
   assets/           obrazy (optymalizowane automatycznie przez Astro)
