@@ -1,0 +1,194 @@
+---
+// Lista wpisów jako poziome wiersze: zdjęcie + tytuł, zajawka i czas czytania.
+// rows — jeden pod drugim (blog), pair — dwa obok siebie (poradniki przy ofercie).
+// Docelowo wpisy z Sanity (zapytanie GROQ po kategorii oferty).
+import { Image } from 'astro:assets';
+import { postTexts, type Post } from '../data/posts';
+import { services } from '../data/services';
+import { readingMinutes } from '../utils/text';
+
+interface Props {
+  posts: readonly Post[];
+  layout?: 'rows' | 'pair';
+  headingLevel?: 'h2' | 'h3';
+}
+
+const { posts, layout = 'rows', headingLevel = 'h3' } = Astro.props;
+const Heading = headingLevel;
+const topic = (post: Post) => services.find((s) => s.slug === post.related[0])?.title;
+---
+
+<ul class:list={['plist', `plist--${layout}`]} role="list">
+  {
+    posts.map((post) => (
+      <li>
+        <a class="prow" href={`/blog/${post.slug}`}>
+          <div class="prow__media">
+            <Image src={post.image.src} alt="" widths={[480, 800]} sizes="(max-width: 700px) 100vw, 34vw" />
+          </div>
+          <div class="prow__body">
+            <Heading class="prow__title">{post.title}</Heading>
+            <p class="prow__excerpt">{post.excerpt}</p>
+            <p class="prow__meta">
+              {readingMinutes(postTexts(post))} min czytania
+              {topic(post) && <> · {topic(post)}</>}
+            </p>
+          </div>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .plist {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .plist--rows {
+    border-top: 1px solid var(--c-line);
+  }
+
+  .plist--pair {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+
+  .prow {
+    display: grid;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .plist--rows .prow {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.6fr);
+    gap: 1.5rem clamp(2rem, 1.5rem + 2vw, 3.5rem);
+    padding-block: clamp(1.75rem, 1.4rem + 1vw, 2.5rem);
+    border-bottom: 1px solid var(--c-line);
+  }
+
+  .plist--pair .prow {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    height: 100%;
+    background: #fff;
+  }
+
+  .prow__media {
+    display: block;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--c-navy-900);
+  }
+
+  /* w kafelku obok siebie zdjęcie wypełnia całą wysokość karty */
+  .plist--pair .prow__media {
+    position: relative;
+    aspect-ratio: auto;
+    height: 100%;
+    min-height: 260px;
+  }
+
+  .plist--pair .prow__media :global(img) {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* jeden wpis: szeroka karta na całą szerokość */
+  .plist--pair > li:only-child {
+    grid-column: 1 / -1;
+  }
+
+  .plist--pair > li:only-child .prow {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .plist--pair > li:only-child .prow__media {
+    min-height: 340px;
+  }
+
+  .plist--pair > li:only-child .prow__body {
+    padding: clamp(1.75rem, 1.2rem + 2.5vw, 4rem);
+  }
+
+  .plist--pair > li:only-child .prow__title {
+    font-size: clamp(1.625rem, 1.3rem + 1.2vw, 2.375rem);
+  }
+
+  .prow__media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.7s var(--ease);
+  }
+
+  .prow:hover .prow__media :global(img) {
+    transform: scale(1.04);
+  }
+
+  .prow__body {
+    display: grid;
+    gap: 0.75rem;
+    align-content: center;
+  }
+
+  .plist--pair .prow__body {
+    padding: clamp(1.5rem, 1.2rem + 1vw, 2.25rem);
+  }
+
+  .prow__title {
+    font-size: clamp(1.375rem, 1.15rem + 0.9vw, 2rem);
+    color: var(--c-heading);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 5px;
+    transition: text-decoration-color 0.2s var(--ease);
+  }
+
+  .plist--pair .prow__title {
+    font-size: var(--fs-h3);
+  }
+
+  .prow:hover .prow__title {
+    text-decoration-color: var(--c-yellow-600);
+  }
+
+  .prow__excerpt {
+    max-width: 56ch;
+    color: var(--c-muted);
+  }
+
+  .prow__meta {
+    font-size: var(--fs-small);
+    font-weight: 600;
+    color: var(--c-heading);
+  }
+
+  @media (max-width: 1000px) {
+    .plist--pair {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .plist--rows .prow,
+    .plist--pair .prow {
+      grid-template-columns: 1fr;
+    }
+
+    .plist--pair .prow__media,
+    .plist--pair > li:only-child .prow__media {
+      height: auto;
+      min-height: 0;
+      aspect-ratio: 3 / 2;
+    }
+
+    .plist--pair > li:only-child .prow {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,29 +1,225 @@
 ---
 // Wspólny szablon dokumentów prawnych (treść w src/content/legal/*.md).
+// Przełącznik między trzema dokumentami, przyklejony spis treści (rozdziały H2)
+// z podświetleniem bieżącego rozdziału i wygodna szerokość tekstu.
+// Docelowo dokument „Strona” w Sanity z treścią w Portable Text.
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from './PageHero.astro';
 
 interface Props {
   title: string;
   description: string;
+  lead?: string;
+  updated?: string;
+  headings?: { depth: number; slug: string; text: string }[];
 }
 
-const { title, description } = Astro.props;
+const { title, description, lead, updated, headings = [] } = Astro.props;
+const toc = headings.filter((h) => h.depth === 2);
+const docs = [
+  { label: 'Polityka prywatności', href: '/polityka-prywatnosci' },
+  { label: 'Polityka cookies', href: '/polityka-cookies' },
+  { label: 'Obowiązek informacyjny', href: '/obowiazek-informacyjny' },
+];
+const current = Astro.url.pathname.replace(/\/$/, '');
 ---
 
 <BaseLayout title={`${title} – Maxol`} description={description}>
-  <PageHero title={title} crumbs={[{ label: title }]} />
-  <section class="section">
-    <div class="container">
-      <div class="prose legal">
+  <PageHero title={title} lead={lead} crumbs={[{ label: title }]}>
+    {updated && <p class="legal-updated">Ostatnia aktualizacja: {updated}</p>}
+    <nav class="docnav" aria-label="Dokumenty">
+      <ul role="list">
+        {
+          docs.map((d) =>
+            d.href === current ? (
+              <li>
+                <span class="docnav__link is-current" aria-current="page">
+                  {d.label}
+                </span>
+              </li>
+            ) : (
+              <li>
+                <a class="docnav__link" href={d.href}>
+                  {d.label}
+                </a>
+              </li>
+            ),
+          )
+        }
+      </ul>
+    </nav>
+  </PageHero>
+
+  <section class="legal-wrap">
+    <div class:list={['container', 'legal', { 'legal--no-toc': toc.length < 2 }]}>
+      {
+        toc.length >= 2 && (
+          <nav class="ltoc" aria-label="Spis treści" data-toc>
+            <p class="ltoc__title">Spis treści</p>
+            <ol class="ltoc__list" role="list">
+              {toc.map((h) => (
+                <li>
+                  <a href={`#${h.slug}`} data-toc-link={h.slug}>
+                    {h.text}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )
+      }
+      <div class="prose legal__body">
         <slot />
       </div>
     </div>
   </section>
 </BaseLayout>
 
+<script>
+  import { initToc } from '../scripts/toc';
+  initToc(document.querySelector<HTMLElement>('[data-toc]'));
+</script>
+
 <style>
-  .legal :global(h2:first-child) {
+  .legal-updated {
+    margin-top: 1.25rem;
+    font-size: var(--fs-small);
+    font-weight: 600;
+    color: var(--c-heading);
+  }
+
+  /* Przełącznik dokumentów */
+  .docnav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .docnav__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 1.125rem;
+    border: 1px solid var(--c-line);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--c-heading);
+    text-decoration: none;
+    transition:
+      border-color 0.2s var(--ease),
+      background-color 0.2s var(--ease);
+  }
+
+  a.docnav__link:hover {
+    border-color: var(--c-heading);
+  }
+
+  .docnav__link.is-current {
+    border-color: var(--c-heading);
+    background: var(--c-heading);
+    color: #fff;
+  }
+
+  /* Treść */
+  .legal-wrap {
+    padding-bottom: var(--section-y);
+  }
+
+  .legal {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.55fr) minmax(0, 1.6fr);
+    gap: 2.5rem clamp(3rem, 2rem + 4vw, 6.5rem);
+    align-items: start;
+    padding-top: clamp(2.5rem, 2rem + 2vw, 3.5rem);
+    border-top: 1px solid var(--c-line);
+  }
+
+  .legal--no-toc {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ltoc {
+    position: sticky;
+    top: calc(var(--header-h) + 2rem);
+  }
+
+  .ltoc__title {
+    margin-bottom: 1rem;
+    font-weight: 800;
+    color: var(--c-heading);
+  }
+
+  .ltoc__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-left: 2px solid var(--c-line);
+  }
+
+  .ltoc__list a {
+    position: relative;
+    display: block;
+    padding: 0.45rem 0 0.45rem 1.125rem;
+    font-size: 0.9375rem;
+    line-height: 1.35;
+    color: var(--c-muted);
+    text-decoration: none;
+  }
+
+  .ltoc__list a::before {
+    content: '';
+    position: absolute;
+    left: -2px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--c-yellow-600);
+    transform: scaleY(0);
+    transition: transform 0.25s var(--ease);
+  }
+
+  .ltoc__list a:hover,
+  .ltoc__list a.is-active {
+    color: var(--c-heading);
+  }
+
+  .ltoc__list a.is-active {
+    font-weight: 700;
+  }
+
+  .ltoc__list a.is-active::before {
+    transform: scaleY(1);
+  }
+
+  .legal__body {
+    max-width: 70ch;
+  }
+
+  .legal__body > :global(:first-child) {
     margin-top: 0;
+  }
+
+  .legal__body :global(h2) {
+    padding-top: 0.25rem;
+    scroll-margin-top: calc(var(--header-h) + 1.5rem);
+  }
+
+  .legal__body :global(h3) {
+    font-size: 1.1875rem;
+  }
+
+  @media (max-width: 1000px) {
+    .legal {
+      grid-template-columns: 1fr;
+    }
+
+    .ltoc {
+      position: static;
+      padding: 1.25rem 1.5rem;
+      background: var(--c-bg-alt);
+    }
   }
 </style>

@@ -1,8 +1,13 @@
 ---
 import LegalPage from '../components/LegalPage.astro';
-import { Content } from '../content/legal/polityka-cookies.md';
+import { Content, getHeadings } from '../content/legal/polityka-cookies.md';
 ---
 
-<LegalPage title="Polityka cookies" description="Zasady korzystania z plików cookies w serwisie maxol.pl.">
+<LegalPage
+  title="Polityka cookies"
+  description="Zasady korzystania z plików cookies w serwisie maxol.pl."
+  lead="Czym są pliki cookies, do czego służą w serwisie maxol.pl i jak wyłączyć ich obsługę w przeglądarce."
+  headings={getHeadings()}
+>
   <Content />
 </LegalPage>

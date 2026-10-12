@@ -7,9 +7,7 @@ import heroPoster from '../assets/hero/hero-poster.jpg';
 import imgFacilities from '../assets/generated/zaplecze-ai.jpg';
 import logoOrlen from '../assets/legacy/logo-orlen-stopka.webp';
 import logoCastrol from '../assets/legacy/logo-castrol-stopka.webp';
-
-// Katalogi PDF: tymczasowo linki do starej strony, docelowo pliki w Sanity
-const CATALOGS = 'https://maxol.pl/images/pdf';
+import { brands } from './brands';
 
 export { services } from './services';
 import { services } from './services';
@@ -143,40 +141,18 @@ export const homePage = {
       _key: 'brands',
       heading: 'Marki w naszej ofercie',
       text: 'Jako autoryzowany dystrybutor ORLEN\u00A0OIL i Castrol dostarczamy oryginalne produkty z pełną dokumentacją. Pobierz aktualne katalogi.',
-      featured: [
-        {
-          name: 'ORLEN\u00A0OIL',
-          logo: { src: logoOrlen, alt: 'ORLEN\u00A0OIL, autoryzowany dystrybutor' },
-          text: 'Oleje silnikowe, przemysłowe i rolnicze, smary oraz płyny eksploatacyjne polskiego producenta.',
-          catalog: { href: `${CATALOGS}/katalog-orlen.pdf`, size: '6,1 MB' },
-        },
-        {
-          name: 'Castrol',
-          logo: { src: logoCastrol, alt: 'Castrol, autoryzowany dystrybutor' },
-          text: 'Oleje i smary Castrol dla motoryzacji, transportu, rolnictwa i przemysłu.',
-          catalog: { href: `${CATALOGS}/katalog-castrol.pdf`, size: '7,8 MB' },
-        },
-      ],
+      featured: brands
+        .filter((b) => b.partner)
+        .map((b) => ({ name: b.name, logo: { src: b.logo!.src, alt: `${b.name}, autoryzowany dystrybutor` }, text: b.text, catalog: b.catalog })),
       othersHeading: 'Pozostałe marki w ofercie',
-      others: [
-        { name: 'Shell', catalog: { href: `${CATALOGS}/katalog-shell.pdf`, size: '1,8 MB' } },
-        { name: 'Total / Elf' },
-        { name: 'Mobil' },
-        { name: 'Quator', catalog: { href: `${CATALOGS}/katalog-quator.pdf`, size: '3,2 MB' } },
-        { name: 'Amtra' },
-      ],
+      others: brands.filter((b) => !b.partner).map((b) => ({ name: b.name, catalog: b.catalog })),
     },
     {
       _type: 'oilFinder',
       _key: 'oil-finder',
       heading: 'Szukasz oleju do konkretnego pojazdu?',
       text: 'Skorzystaj z doborników producentów albo zapytaj naszego doradcę.',
-      links: [
-        { label: 'Castrol', href: 'https://www.castrol.com/pl_pl/poland/home/product-finder.html' },
-        { label: 'ORLEN\u00A0OIL', href: 'https://www.orlenoil.pl/pl/naszaoferta/strony/dobierz-olej.aspx' },
-        { label: 'Total / Elf', href: 'https://lubconsult.totalenergies.com/dobierz-olej' },
-        { label: 'Shell', href: 'https://www.shell.pl/klienci/fuels-oils-and-coolants/oleje-silnikowe-i-srodki-smarne/dobierz-olej-do-silnika-shell-lubematch.html' },
-      ],
+      links: brands.filter((b) => b.finder).map((b) => ({ label: b.name, href: b.finder!.href })),
       cta: { label: 'Zapytaj doradcę o dobór oleju', href: '#kontakt' },
     },
     {

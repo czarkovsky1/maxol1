@@ -1,6 +1,6 @@
 # MAXOL Sp. z o.o. — Dziennik procesu projektowego
 
-> Kroki procesu, wymagania, rekomendacje i decyzje. Utworzono: 2026-10-11 · Ostatnia aktualizacja: 2026-10-11 (Krok 1)
+> Kroki procesu, wymagania, rekomendacje i decyzje. Utworzono: 2026-10-11 · Ostatnia aktualizacja: 2026-10-12 (Krok 4m)
 
 ## 1. Informacje o projekcie
 | Pole | Wartość |
@@ -196,6 +196,10 @@ Legenda: ⏳ Oczekuje · 🔄 W toku · ✅ Zakończone · ⛔ Wstrzymane
 - [ ] Logotypy Shell, Total/Elf, Mobil, Quator, Amtra — obecnie nazwy tekstem; potrzebne oficjalne pliki (monochromatyczne)
 - [ ] Zdjęcia na stronie „O nas” — stockowe z Unsplash (lista autorów: `src/assets/stock/STOCK.md`); podpisy mozaiki („Centrum Dystrybucji”, „Własna flota”…) ilustrują stockiem — przed startem zastąpić prawdziwymi zdjęciami Maxol
 - [ ] Zdjęcie Opakowań — wygenerowane AI (`src/assets/generated/opakowania-ai.jpg`), przykładowe; poprosić klienta o zdjęcie prawdziwych butelek
+- [ ] Zdjęcia bloga i „Dobierz olej” — stockowe z Unsplash (bagnet, silnik ciągnika, sople, smarownice; autorzy w STOCK.md)
+- [ ] Etykieta na „Dobierz olej” pokazuje PRZYKŁADOWE oznaczenia (SAE 5W-30, ACEA C3, API SP, VW 504 00, MB 229.51) — to nie konkretny produkt z oferty; do akceptacji klienta
+- [ ] Opisy marek Shell, Total/Elf, Mobil wynikają z kategorii, w których występują na starej stronie — klient może je rozbudować w Sanity
+- [ ] Artykuły bez dat publikacji (szkice) — data pojawi się z Sanity (pole „Data publikacji”)
 - [ ] Wideo hero: obecnie szkic AI 480p (przykładowy); w wersji Full HD poprosić o europejską ciężarówkę (w szkicu amerykański ciągnik)
 
 ## 6. Decyzje
@@ -238,6 +242,8 @@ Legenda: ⏳ Oczekuje · 🔄 W toku · ✅ Zakończone · ⛔ Wstrzymane
 | 2026-10-11 | Żółty pas z branżami: font o połowę mniejszy | Projektant |
 | 2026-10-11 | Sekcja CTA na końcu podstron: ~~granatowy pas zlewający się ze stopką~~ → karta na białym tle: zdjęcie + panel w granacie marki #0A4A7C (inny odcień niż stopka), znak wodny kropli, telefon i e-mail; dotyczy wszystkich podstron | Projektant (uwaga), Claude (projekt) |
 | 2026-10-11 | „Oferta” przeprojektowana: hero z kartą autoryzowanego dystrybutora (ORLEN OIL, Castrol), przyklejony pasek 7 kategorii ze scrollspy, kategorie w układzie zygzak z 3 punktami i markami, pas marek, karty „Nie wiesz, co wybrać?”; zdjęcia kategorii → stock Unsplash w wysokiej rozdzielczości (także na stronie głównej i podstronach kategorii) | Projektant (polecenie), Claude (projekt) |
+| 2026-10-12 | Pozostałe podstrony w stylu „O nas” i „Oferty”: wspólny nagłówek podstron (białe tło, duże H1, zdjęcie do krawędzi ekranu), kategorie z kartą marek i katalogów, Marki z tabelą marek w kategoriach i półką katalogów, Dobierz olej z interaktywną etykietą, blog ze spisem treści i paskiem postępu, Kontakt z mapą obszaru dostaw, dokumenty prawne ze spisem treści, 404 z kroplą | Projektant (polecenie „resztę podstron do końca”), Claude (projekt) |
+| 2026-10-12 | Marki, katalogi PDF, doborniki i certyfikaty w jednym źródle danych (`src/data/brands.ts`, docelowo dokument „Marka” w Sanity); przynależność marek do kategorii liczona z pola marek w kategorii oferty | Claude (jedno źródło prawdy, łatwa edycja w CMS) |
 | 2026-10-11 | Tematy SEO (JSON-LD, OG, canonical itd.) odkładamy na koniec, po warstwie wizualnej; teraz: struktura strony głównej + wygląd | Projektant |
 
 ## 7. Otwarte pytania
@@ -366,3 +372,19 @@ Legenda: ⏳ Oczekuje · 🔄 W toku · ✅ Zakończone · ⛔ Wstrzymane
 - Komponenty `src/components/offer/`: `OfferHero` (H1 „Oleje, smary i płyny dla każdej branży” + karta „Autoryzowany dystrybutor” z logo ORLEN OIL i Castrol i linkiem do katalogów), `CategoryNav` (przyklejony pod nagłówkiem tylko w obrębie kategorii; scrollspy; na telefonie przewijany w poziomie z centrowaniem aktywnej zakładki; cień po przyklejeniu), `CategoryRow` (zygzak, naprzemienne tło, pierwsze zdanie opisu, 3 punkty z kroplą z logo, marki, „Szczegóły” + „Zapytaj o ofertę”), `HelpCards` (żółta karta doborników + szara karta katalogów). Pas marek (Marquee) między kategoriami a pomocą.
 - `src/scripts/reveal.ts`: wspólny moduł animacji wjazdu (używany na „O nas” i „Ofercie”). `--header-h` = 72 px poniżej 1200 px (poprawne kotwice i przyklejanie).
 **Kontrola:** desktop 1440 px (hero, pasek, kategorie, pomoc), telefon 375 px (brak poziomego przewijania, pasek kategorii), `astro check` 0 błędów.
+
+### Krok 4m — Pozostałe podstrony w nowym stylu (2026-10-12)
+**Polecenie:** „Dawaj w tym stylu resztę podstron do końca” — zastosować doświadczenia z „O nas” i „Oferty” do wszystkich pozostałych podstron.
+**Zasady:** bez nadtytułów, kursywy, wyblakłych tekstów i generycznych siatek kart; duże H1, białe tło, zdjęcia do krawędzi ekranu, żółte akcenty (linia, kropla z logo), interakcje, które pomagają (spis treści, podświetlanie, nawigacja), fakty tylko ze źródeł.
+**Wspólne elementy:** `Breadcrumbs` (jedne okruszki dla wszystkich podstron — pod JSON-LD BreadcrumbList), nowy `PageHero` (warianty xl/lg, ze zdjęciem do prawej krawędzi okna lub z prawą kolumną), `PostList` (wpisy jako poziome wiersze / kafle), `ContactForm` (formularz-makieta wydzielony z bloku kontaktu, używany na stronie głównej i w /kontakt), `HelpCards` z własnymi kartami, `CtaBand` z opcją górnego odstępu, skrypt `toc.ts` (podświetlanie bieżącego rozdziału), `utils/text.ts` (kotwice, czas czytania, polska odmiana liczebników). Dane marek: `src/data/brands.ts`.
+**Podstrony:**
+- **Kategorie oferty (7):** hero ze zdjęciem do krawędzi, 3 punkty z kroplą, „Zapytaj o ofertę” + telefon; opis z pierwszym zdaniem jako dużym wstępem; przyklejona karta „Marki w tej kategorii” (logo ORLEN OIL i Castrol, katalogi PDF) + telefon; ryciny (opakowania); poradniki z bloga powiązane z kategorią; „Pozostałe kategorie” — duży kafel następnej kategorii + spis wszystkich z zaznaczoną bieżącą; karta kontaktu.
+- **Marki:** spis marek w hero (partnerzy z żółtym podkreśleniem); panele ORLEN OIL i Castrol (opis, kategorie z linkami, miniatura certyfikatu PDF, katalog, dobornik); tabela marek w kategoriach (na telefonie karty); półka katalogów PDF w formie okładek z zagiętym rogiem (#katalogi); Quator (#quator).
+- **Dobierz olej:** nowe zdjęcie (bagnet); interaktywna etykieta butelki — lepkość, normy, aprobaty podświetlają się na etykiecie (automatycznie, gdy sekcja na ekranie; bez ruchu przy „ogranicz ruch”); doborniki jako spis wierszy; poradniki; karta kontaktu.
+- **Blog:** wyróżniony wpis (karta na zdjęciu) + pozostałe wiersze; czas czytania; nowe zdjęcia wpisów. **Wpis:** szerokie zdjęcie, spis treści przyklejony z boku z podświetlaniem, pasek postępu czytania w żółtej linii nagłówka, powiązana oferta, pytanie do doradcy, „Przeczytaj także”.
+- **Kontakt:** granatowa karta szybkiego kontaktu w hero; formularz + „Co dalej?” (4 kroki współpracy); wizytówki 4 przedstawicieli i 3 działów; siedziba z mapą obszaru dostaw (7 województw, pinezka Suchedniów, bez Google Maps — bez cookies i wolnego iframe), link „Wyznacz trasę”, dane rejestrowe.
+- **Dokumenty prawne:** przełącznik 3 dokumentów, spis treści z podświetlaniem, data aktualizacji (polityka prywatności 30.10.2024).
+- **404:** kropla z logo z numerem błędu i spadającą kroplą, spis najważniejszych stron.
+- Okruszki „Oferty” i „O nas” przełączone na wspólny komponent; usunięty nieużywany `ServiceCards`.
+**Kontrola:** `astro check` 0 błędów; build 22 strony; test linków i kotwic wewnętrznych — 0 błędów; test 22 stron na 375 px — brak poziomego przewijania (poprawiony przycisk mapy na /kontakt); przegląd desktop 1440 px i telefon 375 px; walidacja formularza na stronie głównej po wydzieleniu komponentu.
+**Następne kroki:** przegląd całości (etap 5) i uwagi projektanta; potem Sanity.

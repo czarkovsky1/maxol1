@@ -1,12 +1,17 @@
 ---
 // Podstrona kategorii oferty: /oferta/[slug] (adresy jak na starej stronie).
 // Docelowo dane z Sanity (dokument „Usługa”), teraz z src/data/services.ts.
+// Układ: hero ze zdjęciem → opis + karta marek i katalogów → (ryciny) →
+// poradniki z bloga → następna kategoria i spis kategorii → karta kontaktu.
 import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHero from '../../components/PageHero.astro';
-import ServiceCards from '../../components/ServiceCards.astro';
+import PostList from '../../components/PostList.astro';
+import CategoryPager from '../../components/offer/CategoryPager.astro';
 import CtaBand from '../../components/CtaBand.astro';
 import { services, type Service } from '../../data/services';
+import { categoryBrands } from '../../data/brands';
+import { posts } from '../../data/posts';
 import { siteSettings } from '../../data/site';
 
 export function getStaticPaths() {
@@ -14,48 +19,105 @@ export function getStaticPaths() {
 }
 
 const { service } = Astro.props as { service: Service };
-const others = services.filter((s) => s.slug !== service.slug).slice(0, 3);
 const drawings = ('drawings' in service && service.drawings) || [];
 const h1 = 'h1' in service && service.h1 ? service.h1 : service.title;
 const ask = 'ask' in service && service.ask ? service.ask : service.title.toLowerCase();
+const brandsHere = categoryBrands(service.brands);
+const guides = posts.filter((p) => p.related.includes(service.slug));
+// Pierwsze zdanie opisu jako duży wstęp, reszta jako zwykły tekst
+const [intro, ...introRest] = service.body[0].split(/(?<=\.)\s/);
+const rest = [introRest.join(' '), ...service.body.slice(1)].filter(Boolean);
+// Rytm teł: gdy po opisie nie ma szarej sekcji, spis kategorii dostaje szare tło
+const pagerAlt = drawings.length === 0 && guides.length === 0;
 ---
 
 <BaseLayout title={service.seo.title} description={service.seo.description}>
-  <PageHero
-    title={h1}
-    lead={service.excerpt}
-    crumbs={[{ label: 'Oferta', href: '/oferta' }, { label: service.title }]}
-    image={service.image}
-  />
+  <PageHero title={h1} lead={service.excerpt} crumbs={[{ label: 'Oferta', href: '/oferta' }, { label: service.title }]} image={service.image} size="lg">
+    <ul class="hl" role="list">
+      {
+        service.highlights.map((h) => (
+          <li>
+            <svg class="hl__drop" viewBox="0 0 20 26" width="12" height="16" aria-hidden="true">
+              <path d="M10 0C10 0 0 11.5 0 17a10 10 0 0 0 20 0C20 11.5 10 0 10 0z" fill="currentColor" />
+            </svg>
+            {h}
+          </li>
+        ))
+      }
+    </ul>
+    <div class="hero-actions">
+      <a class="btn btn--primary" href="/kontakt">Zapytaj o ofertę</a>
+      <a class="hero-actions__phone" href={siteSettings.phone.href}>
+        lub zadzwoń <strong>{siteSettings.phone.display}</strong>
+      </a>
+    </div>
+  </PageHero>
 
-  <section class="section">
-    <div class="container detail">
-      <div class="prose detail__body">
-        {service.body.map((p) => <p>{p}</p>)}
-      </div>
-
-      <aside class="detail__aside" aria-label="Zapytanie o ofertę">
+  <section class="section detail" aria-labelledby="detail-heading">
+    <div class="container detail__grid">
+      <div class="detail__main">
+        <h2 id="detail-heading" class="detail__title">{service.title} w&nbsp;ofercie Maxol</h2>
+        <p class="detail__intro">{intro}</p>
         {
-          service.brands.length > 0 && (
-            <div class="aside-block">
-              <h2 class="aside-block__title">Marki w tej kategorii</h2>
-              <ul class="chips" role="list">
-                {service.brands.map((b) => (
-                  <li>
-                    <a href="/marki#katalogi">{b}</a>
-                  </li>
-                ))}
-              </ul>
+          rest.length > 0 && (
+            <div class="prose detail__body">
+              {rest.map((p) => (
+                <p>{p}</p>
+              ))}
             </div>
           )
         }
-        <div class="aside-block">
-          <h2 class="aside-block__title">Zapytaj o {ask}</h2>
-          <p class="aside-block__text">Przedstawiciel z Twojego regionu dobierze produkty i przygotuje ofertę.</p>
-          <a class="btn btn--primary aside-block__btn" href="/kontakt">Zapytaj o ofertę</a>
-          <a class="aside-block__phone" href={siteSettings.phone.href}>
-            lub zadzwoń: <strong>{siteSettings.phone.display}</strong>
-          </a>
+      </div>
+
+      <aside class="detail__aside" aria-label={brandsHere.length > 0 ? 'Marki i katalogi' : 'Kontakt'}>
+        <div class="side">
+          {
+            brandsHere.length > 0 && (
+              <>
+                <h2 class="side__title">Marki w tej kategorii</h2>
+                <ul class="side__brands" role="list">
+                  {brandsHere.map((b) => (
+                    <li class="sbrand">
+                      {b.logo ? (
+                        <span class="sbrand__logo">
+                          <Image src={b.logo.src} alt={b.logo.alt} width={286} height={82} />
+                        </span>
+                      ) : (
+                        <span class="sbrand__name">{b.name}</span>
+                      )}
+                      {b.catalog && (
+                        <a class="sbrand__pdf" href={b.catalog.href} target="_blank" rel="noopener">
+                          <svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true">
+                            <path d="M10 3v10m0 0l-4-4m4 4l4-4M4 16h12" fill="none" stroke="currentColor" stroke-width="2" />
+                          </svg>
+                          Katalog<span class="visually-hidden"> {b.name}</span> PDF
+                          <span class="sbrand__size">{b.catalog.size}</span>
+                        </a>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+                <a class="link-arrow side__all" href="/marki">
+                  Wszystkie marki i katalogi
+                  <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+                    <path d="M3 9h11M10 4.5L14.5 9 10 13.5" fill="none" stroke="currentColor" stroke-width="2" />
+                  </svg>
+                </a>
+              </>
+            )
+          }
+
+          <div class:list={['side__ask', { 'side__ask--only': brandsHere.length === 0 }]}>
+            <p class="side__ask-title">Zapytaj o {ask}</p>
+            <p class="side__ask-text">Przedstawiciel z Twojego regionu dobierze produkty i przygotuje ofertę.</p>
+            <a class="side__phone" href={siteSettings.phone.href}>{siteSettings.phone.display}</a>
+            <a class="link-arrow" href="/kontakt">
+              Wyślij zapytanie
+              <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+                <path d="M3 9h11M10 4.5L14.5 9 10 13.5" fill="none" stroke="currentColor" stroke-width="2" />
+              </svg>
+            </a>
+          </div>
         </div>
       </aside>
     </div>
@@ -65,16 +127,26 @@ const ask = 'ask' in service && service.ask ? service.ask : service.title.toLowe
     drawings.length > 0 && (
       <section class="section section--alt" aria-labelledby="drawings-heading">
         <div class="container">
-          <h2 id="drawings-heading" class="drawings__title">Ryciny techniczne</h2>
+          <div class="drawings__head">
+            <h2 id="drawings-heading" class="drawings__title">Ryciny techniczne</h2>
+            <p class="drawings__text">Wymiary butelek z dozownikiem do pobrania w PDF.</p>
+          </div>
           <ul class="drawings" role="list">
             {drawings.map((d) => (
               <li>
                 <a class="drawing" href={d.pdf} target="_blank" rel="noopener">
                   <span class="drawing__img">
-                    <Image src={d.image} alt={`Rycina techniczna: ${d.title}`} widths={[400, 800]} sizes="(max-width: 700px) 90vw, 360px" />
+                    <Image src={d.image} alt={`Rycina techniczna: ${d.title}`} widths={[400, 800]} sizes="(max-width: 700px) 90vw, 420px" />
                   </span>
-                  <span class="drawing__title">{d.title}</span>
-                  <span class="drawing__meta">Rycina PDF, {d.size}</span>
+                  <span class="drawing__body">
+                    <span class="drawing__title">{d.title}</span>
+                    <span class="drawing__meta">
+                      <svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true">
+                        <path d="M10 3v10m0 0l-4-4m4 4l4-4M4 16h12" fill="none" stroke="currentColor" stroke-width="2" />
+                      </svg>
+                      Pobierz PDF, {d.size}
+                    </span>
+                  </span>
                 </a>
               </li>
             ))}
@@ -84,96 +156,248 @@ const ask = 'ask' in service && service.ask ? service.ask : service.title.toLowe
     )
   }
 
-  <ServiceCards items={others} heading="Pozostałe kategorie" />
-  <CtaBand />
+  {
+    guides.length > 0 && (
+      <section class="section section--alt guides" aria-labelledby="guides-heading">
+        <div class="container">
+          <div class="guides__head">
+            <h2 id="guides-heading" class="guides__title">Poradniki</h2>
+            <a class="link-arrow" href="/blog">
+              Wszystkie artykuły
+              <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+                <path d="M3 9h11M10 4.5L14.5 9 10 13.5" fill="none" stroke="currentColor" stroke-width="2" />
+              </svg>
+            </a>
+          </div>
+          <PostList posts={guides} layout="pair" />
+        </div>
+      </section>
+    )
+  }
+
+  <CategoryPager current={service} alt={pagerAlt} />
+  <CtaBand spaced={pagerAlt} />
 </BaseLayout>
 
+<script>
+  import { initReveal } from '../../scripts/reveal';
+  initReveal(['.detail__main', '.side', '.drawing', '.guides .plist > li', '.pager__next', '.pager__list', '.cta__card']);
+</script>
+
 <style>
-  .detail {
+  /* Hero: 3 punkty z kroplą z logo + przyciski */
+  .hl {
     display: grid;
-    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
-    gap: 2.5rem 5rem;
-    align-items: start;
-  }
-
-  .detail__body {
-    font-size: 1.125rem;
-  }
-
-  .detail__aside {
-    position: sticky;
-    top: calc(var(--header-h) + 2rem);
-    display: grid;
-    gap: 1rem;
-  }
-
-  .aside-block {
-    padding: clamp(1.5rem, 1.2rem + 1vw, 2rem);
-    background: var(--c-bg-alt);
-  }
-
-  .aside-block__title {
-    font-size: 1.25rem;
-    color: var(--c-heading);
-  }
-
-  .aside-block__text {
-    margin-top: 0.5rem;
-    color: var(--c-muted);
-  }
-
-  .aside-block__btn {
-    margin-top: 1.25rem;
-    width: 100%;
-  }
-
-  .aside-block__phone {
-    display: block;
-    margin-top: 1rem;
-    color: var(--c-muted);
-    text-decoration: none;
-  }
-
-  .aside-block__phone strong {
-    color: var(--c-heading);
-  }
-
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin: 1rem 0 0;
+    gap: 0.75rem;
+    margin: 2rem 0 0;
     padding: 0;
     list-style: none;
   }
 
-  .chips a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 40px;
-    padding: 0 1rem;
-    border: 1px solid var(--c-line);
-    border-radius: var(--radius);
-    background: #fff;
-    font-size: 0.9375rem;
+  .hl li {
+    display: flex;
+    gap: 0.75rem;
+    align-items: baseline;
     font-weight: 600;
-    color: var(--c-heading);
+    color: var(--c-ink);
+  }
+
+  .hl__drop {
+    flex: none;
+    position: relative;
+    top: 2px;
+    color: var(--c-yellow-600);
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.75rem;
+    margin-top: 2.25rem;
+  }
+
+  .hero-actions__phone {
+    color: var(--c-muted);
     text-decoration: none;
   }
 
-  .chips a:hover {
-    border-color: var(--c-heading);
+  .hero-actions__phone strong {
+    color: var(--c-heading);
+    font-weight: 800;
   }
 
-  .drawings__title {
-    margin-bottom: 2rem;
+  .hero-actions__phone:hover strong {
+    text-decoration: underline;
+  }
+
+  /* Opis */
+  .detail__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    gap: 3rem clamp(3rem, 2rem + 4vw, 6.5rem);
+    align-items: start;
+  }
+
+  .detail__title {
     font-size: var(--fs-h2);
     color: var(--c-heading);
   }
 
+  .detail__intro {
+    max-width: 38ch;
+    margin-top: 1.75rem;
+    font-size: clamp(1.25rem, 1.05rem + 0.7vw, 1.625rem);
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    color: var(--c-heading);
+  }
+
+  .detail__body {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 3px solid var(--c-yellow);
+    max-width: 62ch;
+    font-size: 1.125rem;
+  }
+
+  /* Karta marek (przyklejona przy przewijaniu) */
+  .detail__aside {
+    position: sticky;
+    top: calc(var(--header-h) + 2rem);
+  }
+
+  .side {
+    padding: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem);
+    background: var(--c-bg-alt);
+    border-top: 4px solid var(--c-yellow);
+  }
+
+  .side__title {
+    font-size: 1.25rem;
+    color: var(--c-heading);
+  }
+
+  .side__brands {
+    display: grid;
+    gap: 0.5rem;
+    margin: 1.25rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .sbrand {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 64px;
+    padding: 0.625rem 1rem;
+    background: #fff;
+  }
+
+  .sbrand__logo {
+    display: block;
+    width: 132px;
+  }
+
+  .sbrand__logo :global(img) {
+    width: 100%;
+    height: auto;
+  }
+
+  .sbrand__name {
+    font-size: 1.125rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--c-heading);
+  }
+
+  .sbrand__pdf {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    flex: none;
+    font-size: var(--fs-small);
+    font-weight: 700;
+    color: var(--c-heading);
+    text-decoration: none;
+  }
+
+  .sbrand__pdf:hover {
+    text-decoration: underline;
+  }
+
+  .sbrand__size {
+    font-weight: 500;
+    color: var(--c-muted);
+  }
+
+  .side__all {
+    margin-top: 1.25rem;
+  }
+
+  .side__ask {
+    margin-top: 1.75rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--c-line);
+  }
+
+  .side__ask--only {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .side__ask-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--c-heading);
+  }
+
+  .side__ask-text {
+    margin-top: 0.5rem;
+    color: var(--c-muted);
+  }
+
+  .side__phone {
+    display: block;
+    margin: 1rem 0 0.75rem;
+    font-size: clamp(1.5rem, 1.3rem + 0.8vw, 1.875rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--c-heading);
+    text-decoration: none;
+  }
+
+  .side__phone:hover {
+    text-decoration: underline;
+  }
+
+  /* Ryciny */
+  .drawings__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem 3rem;
+    margin-bottom: clamp(2rem, 1.5rem + 2vw, 3rem);
+  }
+
+  .drawings__title {
+    font-size: var(--fs-h2);
+    color: var(--c-heading);
+  }
+
+  .drawings__text {
+    color: var(--c-muted);
+  }
+
   .drawings {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 320px));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1.5rem;
     margin: 0;
     padding: 0;
@@ -182,38 +406,79 @@ const ask = 'ask' in service && service.ask ? service.ask : service.title.toLowe
 
   .drawing {
     display: grid;
-    gap: 0.375rem;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    height: 100%;
+    background: #fff;
     text-decoration: none;
   }
 
   .drawing__img {
     display: block;
-    padding: 1rem;
-    background: #fff;
+    padding: clamp(1rem, 0.5rem + 2vw, 2rem);
+    border-right: 1px solid var(--c-bg-alt);
+  }
+
+  .drawing__body {
+    display: grid;
+    gap: 0.75rem;
+    padding: clamp(1.25rem, 1rem + 1vw, 2rem);
   }
 
   .drawing__title {
-    margin-top: 0.5rem;
+    font-size: var(--fs-h3);
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--c-heading);
+  }
+
+  .drawing__meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
     font-weight: 700;
     color: var(--c-heading);
   }
 
-  .drawing:hover .drawing__title {
+  .drawing:hover .drawing__meta {
     text-decoration: underline;
   }
 
-  .drawing__meta {
-    font-size: var(--fs-small);
-    color: var(--c-muted);
+  /* Poradniki */
+  .guides__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem 3rem;
+    margin-bottom: clamp(2rem, 1.5rem + 2vw, 3rem);
   }
 
-  @media (max-width: 900px) {
-    .detail {
+  .guides__title {
+    font-size: var(--fs-h2);
+    color: var(--c-heading);
+  }
+
+  @media (max-width: 1000px) {
+    .detail__grid {
       grid-template-columns: 1fr;
     }
 
     .detail__aside {
       position: static;
+      max-width: 560px;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .drawings,
+    .drawing {
+      grid-template-columns: 1fr;
+    }
+
+    .drawing__img {
+      border-right: 0;
+      border-bottom: 1px solid var(--c-bg-alt);
     }
   }
 </style>

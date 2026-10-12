@@ -1,0 +1,218 @@
+---
+// Koniec podstrony kategorii: duży kafel „Następna kategoria” ze zdjęciem
+// + spis wszystkich kategorii z zaznaczoną bieżącą (orientacja w ofercie).
+import { Image } from 'astro:assets';
+import { services, type Service } from '../../data/services';
+
+interface Props {
+  current: Service;
+  alt?: boolean;
+}
+
+const { current, alt = false } = Astro.props;
+const index = services.findIndex((s) => s.slug === current.slug);
+const next = services[(index + 1) % services.length];
+---
+
+<section class:list={['section', 'pager', { 'section--alt': alt }]} aria-labelledby="pager-heading">
+  <div class="container">
+    <h2 id="pager-heading" class="pager__title">Pozostałe kategorie</h2>
+
+    <div class="pager__grid">
+      <a class="pager__next" href={`/oferta/${next.slug}`}>
+        <Image src={next.image.src} alt="" widths={[640, 1000, 1400]} sizes="(max-width: 900px) 100vw, 55vw" />
+        <span class="pager__next-body">
+          <span class="pager__next-name">{next.title}</span>
+          <span class="pager__next-more">
+            Następna kategoria
+            <svg width="20" height="20" viewBox="0 0 18 18" aria-hidden="true">
+              <path d="M3 9h11M10 4.5L14.5 9 10 13.5" fill="none" stroke="currentColor" stroke-width="2" />
+            </svg>
+          </span>
+        </span>
+      </a>
+
+      <ul class="pager__list" role="list">
+        {
+          services.map((s) => (
+            <li>
+              {s.slug === current.slug ? (
+                <span class="pager__link is-current" aria-current="page">
+                  <svg class="pager__drop" viewBox="0 0 20 26" width="11" height="14" aria-hidden="true">
+                    <path d="M10 0C10 0 0 11.5 0 17a10 10 0 0 0 20 0C20 11.5 10 0 10 0z" fill="currentColor" />
+                  </svg>
+                  {s.title}
+                  <span class="pager__here">ta strona</span>
+                </span>
+              ) : (
+                <a class="pager__link" href={`/oferta/${s.slug}`}>
+                  {s.title}
+                  <svg class="pager__arrow" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+                    <path d="M3 9h11M10 4.5L14.5 9 10 13.5" fill="none" stroke="currentColor" stroke-width="2" />
+                  </svg>
+                </a>
+              )}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .pager__title {
+    margin-bottom: clamp(2rem, 1.5rem + 2vw, 3rem);
+    font-size: var(--fs-h2);
+    color: var(--c-heading);
+  }
+
+  .pager__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 2rem clamp(2.5rem, 1.5rem + 4vw, 5.5rem);
+    align-items: stretch;
+  }
+
+  .pager__next {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: 420px;
+    overflow: hidden;
+    background: var(--c-navy-900);
+    color: #fff;
+    text-decoration: none;
+  }
+
+  .pager__next :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.9s var(--ease);
+  }
+
+  .pager__next::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(to top, rgb(4 20 34 / 0.88) 0%, rgb(4 20 34 / 0.35) 45%, rgb(4 20 34 / 0) 70%);
+  }
+
+  .pager__next:hover :global(img) {
+    transform: scale(1.04);
+  }
+
+  .pager__next-body {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    gap: 0.875rem;
+    padding: clamp(1.75rem, 1.2rem + 2vw, 3rem);
+  }
+
+  .pager__next-name {
+    font-size: clamp(2rem, 1.4rem + 2.2vw, 3.25rem);
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+  }
+
+  .pager__next-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    color: var(--c-yellow);
+  }
+
+  .pager__next-more svg {
+    transition: transform 0.2s var(--ease);
+  }
+
+  .pager__next:hover .pager__next-more svg {
+    transform: translateX(5px);
+  }
+
+  .pager__list {
+    display: grid;
+    align-content: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--c-line);
+  }
+
+  .pager__link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 60px;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--c-line);
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--c-heading);
+    text-decoration: none;
+    transition: padding 0.25s var(--ease);
+  }
+
+  /* żółta kreska wysuwa się przy najechaniu */
+  a.pager__link::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 0;
+    height: 3px;
+    background: var(--c-yellow);
+    transform: translateY(-50%);
+    transition: width 0.25s var(--ease);
+  }
+
+  a.pager__link:hover {
+    padding-left: 1.75rem;
+  }
+
+  a.pager__link:hover::before {
+    width: 1.125rem;
+  }
+
+  .pager__arrow {
+    margin-left: auto;
+    transition: transform 0.2s var(--ease);
+  }
+
+  a.pager__link:hover .pager__arrow {
+    transform: translateX(4px);
+  }
+
+  .pager__link.is-current {
+    color: var(--c-muted);
+  }
+
+  .pager__drop {
+    flex: none;
+    color: var(--c-yellow-600);
+  }
+
+  .pager__here {
+    margin-left: auto;
+    font-size: var(--fs-small);
+    font-weight: 600;
+  }
+
+  @media (max-width: 900px) {
+    .pager__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .pager__next {
+      min-height: 300px;
+    }
+  }
+</style>

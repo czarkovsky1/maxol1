@@ -2,16 +2,17 @@
 // TREŚĆ ROBOCZA: artykuły przygotowane jako szkice do weryfikacji przez Maxol
 // (ogólna wiedza branżowa, bez konkretnych liczb i obietnic).
 
-import imgSmary from '../assets/legacy/photo-offer-3.webp';
-import imgRolnictwo from '../assets/legacy/photo-offer-4.webp';
-import imgPlyny from '../assets/legacy/photo-offer-5.webp';
+// Zdjęcia stockowe z Unsplash (autorzy: src/assets/stock/STOCK.md)
+import imgSmary from '../assets/stock/blog-smarownice.jpg';
+import imgRolnictwo from '../assets/stock/blog-silnik-ciagnika.jpg';
+import imgPlyny from '../assets/stock/blog-zima-sople.jpg';
 
 export const posts = [
   {
     slug: 'jak-dobrac-olej-do-ciagnika',
     title: 'Jak dobrać olej do ciągnika i kombajnu',
     excerpt: 'Na co patrzeć w normach i specyfikacjach producenta maszyny, żeby olej wytrzymał cały sezon.',
-    image: { src: imgRolnictwo, alt: 'Olej wlewany z kanistra' },
+    image: { src: imgRolnictwo, alt: 'Silnik wysokoprężny ciągnika rolniczego' },
     related: ['oleje-dla-rolnictwa', 'smary'],
     sections: [
       {
@@ -44,7 +45,7 @@ export const posts = [
     slug: 'glikol-etylenowy-czy-propylenowy',
     title: 'Glikol etylenowy czy propylenowy?',
     excerpt: 'Czym różnią się płyny chłodnicze na bazie obu glikoli i którego użyć w pojeździe lub maszynie.',
-    image: { src: imgPlyny, alt: 'Kanistry płynu chłodniczego' },
+    image: { src: imgPlyny, alt: 'Sople lodu pod zderzakiem samochodu zimą' },
     related: ['plyny-chlodnicze', 'oleje-dla-motoryzacji'],
     sections: [
       {
@@ -77,7 +78,7 @@ export const posts = [
     slug: 'gospodarka-smarowa-w-zakladzie',
     title: 'Gospodarka smarowa w zakładzie: od czego zacząć',
     excerpt: 'Jak uporządkować dobór i harmonogram smarowania maszyn, żeby ograniczyć przestoje.',
-    image: { src: imgSmary, alt: 'Smarowanie łożyska tocznego' },
+    image: { src: imgSmary, alt: 'Rząd smarownic olejowych na maszynie' },
     related: ['oleje-dla-przemyslu', 'smary'],
     sections: [
       {
@@ -115,3 +116,6 @@ export const posts = [
 ];
 
 export type Post = (typeof posts)[number];
+
+/** Wszystkie teksty wpisu (do czasu czytania i wyszukiwania). */
+export const postTexts = (post: Post) => post.sections.flatMap((s) => ['heading' in s && s.heading ? s.heading : '', ...s.paragraphs]);

@@ -1,6 +1,7 @@
 ---
 // Hero strony „Oferta”: duże H1 + karta autoryzowanego dystrybutora (sponsorzy ORLEN OIL i Castrol).
 import { Image } from 'astro:assets';
+import Breadcrumbs from '../Breadcrumbs.astro';
 import logoOrlen from '../../assets/legacy/logo-orlen-stopka.webp';
 import logoCastrol from '../../assets/legacy/logo-castrol-stopka.webp';
 
@@ -15,12 +16,7 @@ const { title, lead } = Astro.props;
 <section class="ohero" aria-labelledby="ohero-title">
   <div class="container ohero__grid">
     <div>
-      <nav class="crumbs" aria-label="Ścieżka nawigacji">
-        <ol>
-          <li><a href="/">Strona główna</a></li>
-          <li><span aria-current="page">Oferta</span></li>
-        </ol>
-      </nav>
+      <Breadcrumbs items={[{ label: 'Oferta' }]} />
       <h1 id="ohero-title" class="ohero__title" set:html={title} />
       <p class="ohero__lead">{lead}</p>
     </div>
@@ -54,31 +50,9 @@ const { title, lead } = Astro.props;
     align-items: end;
   }
 
-  .crumbs ol {
-    display: flex;
-    flex-wrap: wrap;
-    margin: 0 0 2rem;
-    padding: 0;
-    list-style: none;
-    font-size: var(--fs-small);
-    color: var(--c-muted);
-  }
 
-  .crumbs li + li::before {
-    content: '/';
-    margin-inline: 0.625rem;
-    color: #9aa6b1;
-  }
 
-  .crumbs a {
-    font-weight: 600;
-    color: var(--c-heading);
-    text-decoration: none;
-  }
 
-  .crumbs a:hover {
-    text-decoration: underline;
-  }
 
   .ohero__title {
     max-width: 14ch;

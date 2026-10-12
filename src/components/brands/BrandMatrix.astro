@@ -1,0 +1,283 @@
+---
+// Tabela „marka × kategoria”: w których kategoriach oferty są produkty danej
+// marki, plus katalog PDF i dobornik. Dane liczone z services.ts i brands.ts,
+// więc po zmianie marek w kategorii (docelowo w Sanity) tabela zmienia się sama.
+// Na telefonie każdy wiersz zamienia się w kartę z listą kategorii.
+import { brands, brandCategories } from '../../data/brands';
+import { services } from '../../data/services';
+
+interface Props {
+  heading: string;
+  text?: string;
+}
+
+const { heading, text } = Astro.props;
+const short: Record<string, string> = {
+  'oleje-dla-przemyslu': 'Przemysł',
+  'oleje-dla-motoryzacji': 'Motoryzacja',
+  'oleje-dla-rolnictwa': 'Rolnictwo',
+  smary: 'Smary',
+  'plyny-chlodnicze': 'Płyny chłodnicze',
+  'kosmetyki-i-chemia-samochodowa': 'Chemia samochodowa',
+};
+const columns = services.filter((s) => s.brands.length > 0);
+const rows = brands.map((b) => ({ brand: b, cats: new Set(brandCategories(b).map((s) => s.slug)) }));
+---
+
+<section class="section matrix" id="marki-w-kategoriach" aria-labelledby="matrix-heading">
+  <div class="container">
+    <div class="matrix__head">
+      <h2 id="matrix-heading" class="matrix__title">{heading}</h2>
+      {text && <p class="matrix__text">{text}</p>}
+    </div>
+
+    <div class="matrix__scroll">
+      <table class="mtable">
+        <caption class="visually-hidden">Dostępność marek w kategoriach oferty Maxol</caption>
+        <thead>
+          <tr>
+            <th scope="col" class="mtable__corner">Marka</th>
+            {
+              columns.map((c) => (
+                <th scope="col">
+                  <a href={`/oferta/${c.slug}`}>{short[c.slug] ?? c.title}</a>
+                </th>
+              ))
+            }
+            <th scope="col">Katalog</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            rows.map(({ brand, cats }) => (
+              <tr class:list={{ 'is-partner': brand.partner }}>
+                <th scope="row">
+                  <span class="mtable__brand">{brand.name}</span>
+                  {brand.partner && <span class="mtable__badge">autoryzowany dystrybutor</span>}
+                </th>
+                {columns.map((c) => (
+                  <td class:list={cats.has(c.slug) ? 'is-yes' : 'is-no'} data-label={short[c.slug] ?? c.title}>
+                    {cats.has(c.slug) ? (
+                      <>
+                        <svg viewBox="0 0 20 26" width="14" height="18" aria-hidden="true">
+                          <path d="M10 0C10 0 0 11.5 0 17a10 10 0 0 0 20 0C20 11.5 10 0 10 0z" fill="currentColor" />
+                        </svg>
+                        <span class="visually-hidden">tak</span>
+                      </>
+                    ) : (
+                      <span class="mtable__dash">
+                        <span aria-hidden="true">–</span>
+                        <span class="visually-hidden">nie</span>
+                      </span>
+                    )}
+                  </td>
+                ))}
+                <td class="mtable__pdf" data-label="Katalog">
+                  {brand.catalog ? (
+                    <a href={brand.catalog.href} target="_blank" rel="noopener">
+                      PDF<span class="visually-hidden"> {brand.name}</span>, {brand.catalog.size}
+                    </a>
+                  ) : (
+                    <span class="mtable__dash">
+                      <span aria-hidden="true">–</span>
+                      <span class="visually-hidden">brak</span>
+                    </span>
+                  )}
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<style>
+  .matrix__head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1.5rem 4rem;
+    align-items: end;
+    margin-bottom: clamp(2rem, 1.5rem + 2vw, 3rem);
+  }
+
+  .matrix__title {
+    max-width: 16ch;
+    font-size: var(--fs-h2);
+    color: var(--c-heading);
+  }
+
+  .matrix__text {
+    max-width: 52ch;
+    color: var(--c-muted);
+  }
+
+  .matrix__scroll {
+    overflow-x: auto;
+  }
+
+  .mtable {
+    width: 100%;
+    min-width: 760px;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+  }
+
+  .mtable th,
+  .mtable td {
+    padding: 1rem 0.75rem;
+    border-bottom: 1px solid var(--c-line);
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .mtable thead th {
+    padding-top: 0;
+    border-bottom: 2px solid var(--c-heading);
+    font-size: var(--fs-small);
+    font-weight: 700;
+    color: var(--c-heading);
+    line-height: 1.25;
+  }
+
+  .mtable thead a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .mtable thead a:hover {
+    text-decoration: underline;
+  }
+
+  .mtable th:first-child {
+    width: 24%;
+    padding-left: 0;
+    text-align: left;
+  }
+
+  .mtable tbody th {
+    font-weight: 400;
+  }
+
+  .mtable__brand {
+    display: block;
+    font-size: 1.1875rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--c-heading);
+  }
+
+  .mtable__badge {
+    display: block;
+    margin-top: 0.125rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--c-muted);
+  }
+
+  .mtable td.is-yes svg {
+    display: inline-block;
+    color: var(--c-yellow-600);
+  }
+
+  .mtable__dash {
+    color: #8d99a5;
+  }
+
+  .mtable tbody tr {
+    transition: background-color 0.2s var(--ease);
+  }
+
+  .mtable tbody tr:hover {
+    background: var(--c-bg-alt);
+  }
+
+  .mtable__pdf a {
+    font-weight: 700;
+    color: var(--c-heading);
+    white-space: nowrap;
+  }
+
+  /* Telefon: wiersz = karta, widać tylko kategorie, w których marka jest */
+  @media (max-width: 860px) {
+    .matrix__head {
+      grid-template-columns: 1fr;
+    }
+
+    .mtable thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+    }
+
+    .mtable,
+    .mtable tbody,
+    .mtable tr {
+      display: block;
+      min-width: 0;
+    }
+
+    .mtable tr {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding: 1.25rem 0;
+      border-bottom: 1px solid var(--c-line);
+    }
+
+    .mtable tbody tr:hover {
+      background: none;
+    }
+
+    .mtable th,
+    .mtable td {
+      padding: 0;
+      border: 0;
+      text-align: left;
+    }
+
+    .mtable tbody th {
+      width: 100%;
+      margin-bottom: 0.25rem;
+    }
+
+    .mtable td.is-no {
+      display: none;
+    }
+
+    .mtable td.is-yes {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.3rem 0.65rem;
+      background: var(--c-bg-alt);
+      font-weight: 600;
+      color: var(--c-ink);
+    }
+
+    .mtable td.is-yes::after {
+      content: attr(data-label);
+    }
+
+    .mtable td.is-yes svg {
+      width: 10px;
+      height: 13px;
+    }
+
+    .mtable__pdf {
+      width: 100%;
+      margin-top: 0.25rem;
+    }
+
+    .mtable__pdf a::before {
+      content: 'Katalog ';
+    }
+
+    .mtable__pdf:has(.mtable__dash) {
+      display: none;
+    }
+  }
+</style>

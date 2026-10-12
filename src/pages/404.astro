@@ -1,26 +1,271 @@
 ---
+// Strona błędu 404: duża kropla z logo z numerem błędu (spada z niej mała kropla),
+// przyciski powrotu i spis najważniejszych miejsc w serwisie.
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PageHero from '../components/PageHero.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { services } from '../data/services';
+import { siteSettings } from '../data/site';
+
+const more = [
+  { label: 'Marki i katalogi PDF', href: '/marki' },
+  { label: 'Dobierz olej', href: '/dobierz-olej' },
+  { label: 'O nas', href: '/o-nas' },
+  { label: 'Kontakt', href: '/kontakt' },
+];
 ---
 
 <BaseLayout title="Nie znaleziono strony – Maxol" noindex>
-  <PageHero
-    title="Nie znaleźliśmy tej strony"
-    lead="Strona mogła zostać przeniesiona albo adres zawiera literówkę. Sprawdź ofertę lub skontaktuj się z nami."
-    crumbs={[{ label: 'Błąd 404' }]}
-  >
-    <div class="nf-actions">
-      <a class="btn btn--primary" href="/oferta">Zobacz ofertę</a>
-      <a class="btn btn--ghost" href="/">Strona główna</a>
+  <section class="nf">
+    <div class="container nf__grid">
+      <div class="nf__copy">
+        <Breadcrumbs items={[{ label: 'Błąd 404' }]} />
+        <h1 class="nf__title">Tej strony tu nie ma</h1>
+        <p class="nf__lead">Strona mogła zostać przeniesiona albo adres zawiera literówkę. Zacznij od oferty lub skontaktuj się z nami.</p>
+        <div class="nf__actions">
+          <a class="btn btn--primary" href="/oferta">Zobacz ofertę</a>
+          <a class="btn btn--ghost" href="/">Strona główna</a>
+        </div>
+        <p class="nf__phone">
+          Szukasz konkretnego produktu? Zadzwoń: <a href={siteSettings.phone.href}>{siteSettings.phone.display}</a>
+        </p>
+      </div>
+
+      <div class="nf__art" aria-hidden="true">
+        <svg viewBox="0 0 300 440">
+          <g class="nf__big">
+            <path d="M150 12C150 12 30 150 30 216a120 120 0 0 0 240 0C270 150 150 12 150 12z" fill="#0a4a7c"></path>
+            <path d="M92 196c0-30 26-74 40-92" fill="none" stroke="#fff" stroke-opacity="0.18" stroke-width="10" stroke-linecap="round"></path>
+            <text x="150" y="262" text-anchor="middle" class="nf__num">404</text>
+          </g>
+          <path class="nf__drip" d="M150 344c0 0-7 8-7 12a7 7 0 0 0 14 0c0-4-7-12-7-12z" fill="#fad900"></path>
+          <ellipse class="nf__puddle" cx="150" cy="420" rx="46" ry="7" fill="#fad900"></ellipse>
+        </svg>
+      </div>
     </div>
-  </PageHero>
+  </section>
+
+  <section class="section section--alt" aria-labelledby="nf-links-heading">
+    <div class="container nf-links">
+      <h2 id="nf-links-heading" class="nf-links__title">Może szukasz</h2>
+      <div class="nf-links__cols">
+        <div>
+          <h3 class="nf-links__sub">Oferta</h3>
+          <ul role="list">
+            {
+              services.map((s) => (
+                <li>
+                  <a href={`/oferta/${s.slug}`}>{s.title}</a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        <div>
+          <h3 class="nf-links__sub">Firma</h3>
+          <ul role="list">
+            {
+              more.map((l) => (
+                <li>
+                  <a href={l.href}>{l.label}</a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
 </BaseLayout>
 
 <style>
-  .nf-actions {
+  .nf {
+    padding-block: clamp(2rem, 1.5rem + 2vw, 3.5rem) clamp(3.5rem, 2.5rem + 4vw, 6rem);
+  }
+
+  .nf__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 2.5rem clamp(3rem, 2rem + 4vw, 6rem);
+    align-items: center;
+  }
+
+  .nf__title {
+    max-width: 12ch;
+    font-size: clamp(2.75rem, 1.6rem + 4.6vw, 5.75rem);
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+    color: var(--c-heading);
+  }
+
+  .nf__lead {
+    max-width: 50ch;
+    margin-top: 1.75rem;
+    font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.3125rem);
+    color: var(--c-muted);
+  }
+
+  .nf__actions {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
-    margin-top: 2rem;
+    margin-top: 2.25rem;
+  }
+
+  .nf__phone {
+    margin-top: 1.75rem;
+    color: var(--c-muted);
+  }
+
+  .nf__phone a {
+    font-weight: 800;
+    color: var(--c-heading);
+  }
+
+  .nf__art {
+    justify-self: center;
+    width: min(100%, 340px);
+  }
+
+  .nf__big {
+    transform-origin: 150px 330px;
+    animation: nf-wobble 4.8s ease-in-out infinite;
+  }
+
+  .nf__num {
+    font: 800 76px var(--font);
+    letter-spacing: -0.04em;
+    fill: #fad900;
+  }
+
+  .nf__drip {
+    animation: nf-drip 2.4s cubic-bezier(0.55, 0, 0.9, 0.4) infinite;
+  }
+
+  .nf__puddle {
+    transform-origin: 150px 420px;
+    animation: nf-puddle 2.4s ease-out infinite;
+  }
+
+  @keyframes nf-wobble {
+    0%,
+    100% {
+      transform: scale(1, 1);
+    }
+
+    50% {
+      transform: scale(1.015, 0.985);
+    }
+  }
+
+  @keyframes nf-drip {
+    0% {
+      transform: translateY(-8px) scale(0.3);
+      opacity: 0;
+    }
+
+    25% {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+
+    80% {
+      transform: translateY(66px) scale(1);
+      opacity: 1;
+    }
+
+    100% {
+      transform: translateY(70px) scale(1.4, 0.2);
+      opacity: 0;
+    }
+  }
+
+  @keyframes nf-puddle {
+    0%,
+    78% {
+      transform: scale(0.85);
+      opacity: 0.55;
+    }
+
+    90% {
+      transform: scale(1.12);
+      opacity: 0.85;
+    }
+
+    100% {
+      transform: scale(0.85);
+      opacity: 0.55;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nf__big,
+    .nf__drip,
+    .nf__puddle {
+      animation: none;
+    }
+  }
+
+  .nf-links {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: 2rem 4rem;
+  }
+
+  .nf-links__title {
+    font-size: var(--fs-h2);
+    color: var(--c-heading);
+  }
+
+  .nf-links__cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem 3rem;
+  }
+
+  .nf-links__sub {
+    margin-bottom: 0.75rem;
+    font-size: 1.125rem;
+    color: var(--c-heading);
+  }
+
+  .nf-links ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--c-line);
+  }
+
+  .nf-links li a {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    border-bottom: 1px solid var(--c-line);
+    font-weight: 600;
+    color: var(--c-ink);
+    text-decoration: none;
+    transition: padding 0.2s var(--ease);
+  }
+
+  .nf-links li a:hover {
+    padding-left: 0.5rem;
+    color: var(--c-heading);
+  }
+
+  @media (max-width: 860px) {
+    .nf__grid,
+    .nf-links {
+      grid-template-columns: 1fr;
+    }
+
+    .nf__art {
+      width: 180px;
+      justify-self: start;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .nf-links__cols {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

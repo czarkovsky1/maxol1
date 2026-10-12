@@ -2,6 +2,7 @@
 // Hero strony „O nas”: duże H1 nawiązujące do hasła z logo („Partner w olejach”)
 // + kolaż trzech nachodzących na siebie zdjęć.
 import { Image } from 'astro:assets';
+import Breadcrumbs from '../Breadcrumbs.astro';
 import type { ImageMetadata } from 'astro';
 
 interface Props {
@@ -17,12 +18,7 @@ const [big, mid, small] = images;
 <section class="ahero" aria-labelledby="ahero-title">
   <div class="container ahero__grid">
     <div class="ahero__copy">
-      <nav class="crumbs" aria-label="Ścieżka nawigacji">
-        <ol>
-          <li><a href="/">Strona główna</a></li>
-          <li><span aria-current="page">O nas</span></li>
-        </ol>
-      </nav>
+      <Breadcrumbs items={[{ label: 'O nas' }]} />
       <h1 id="ahero-title" class="ahero__title" set:html={title} />
       <p class="ahero__lead">{lead}</p>
       <div class="ahero__actions">
@@ -63,31 +59,9 @@ const [big, mid, small] = images;
     align-items: center;
   }
 
-  .crumbs ol {
-    display: flex;
-    flex-wrap: wrap;
-    margin: 0 0 2rem;
-    padding: 0;
-    list-style: none;
-    font-size: var(--fs-small);
-    color: var(--c-muted);
-  }
 
-  .crumbs li + li::before {
-    content: '/';
-    margin-inline: 0.625rem;
-    color: #9aa6b1;
-  }
 
-  .crumbs a {
-    font-weight: 600;
-    color: var(--c-heading);
-    text-decoration: none;
-  }
 
-  .crumbs a:hover {
-    text-decoration: underline;
-  }
 
   .ahero__title {
     max-width: 11ch;

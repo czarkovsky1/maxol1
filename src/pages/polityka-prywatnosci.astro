@@ -1,8 +1,14 @@
 ---
 import LegalPage from '../components/LegalPage.astro';
-import { Content } from '../content/legal/polityka-prywatnosci.md';
+import { Content, getHeadings } from '../content/legal/polityka-prywatnosci.md';
 ---
 
-<LegalPage title="Polityka prywatności" description="Zasady przetwarzania danych osobowych w serwisie maxol.pl przez MAXOL Sp. z o.o.">
+<LegalPage
+  title="Polityka prywatności"
+  description="Zasady przetwarzania danych osobowych w serwisie maxol.pl przez MAXOL Sp. z o.o."
+  lead="Jak MAXOL Sp. z o.o. przetwarza i chroni dane osobowe Użytkowników serwisu maxol.pl."
+  updated="30.10.2024"
+  headings={getHeadings()}
+>
   <Content />
 </LegalPage>

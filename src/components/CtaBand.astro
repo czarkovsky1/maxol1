@@ -8,15 +8,18 @@ import defaultImage from '../assets/stock/handlowiec-tablet.jpg';
 interface Props {
   heading?: string;
   text?: string;
+  /** górny odstęp, gdy wcześniejsza sekcja ma szare tło */
+  spaced?: boolean;
 }
 
 const {
   heading = 'Porozmawiajmy o dostawach dla Twojej firmy',
   text = 'Przedstawiciel z Twojego regionu dobierze produkty i przygotuje ofertę.',
+  spaced = false,
 } = Astro.props;
 ---
 
-<section class="cta" aria-labelledby="cta-heading">
+<section class:list={['cta', { 'cta--spaced': spaced }]} aria-labelledby="cta-heading">
   <div class="container">
     <div class="cta__card">
       <div class="cta__media">
@@ -52,6 +55,10 @@ const {
   .cta {
     padding-block: 0 var(--section-y);
     background: #fff;
+  }
+
+  .cta--spaced {
+    padding-top: var(--section-y);
   }
 
   .cta__card {

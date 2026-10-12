@@ -1,0 +1,58 @@
+---
+// Okruszki (ścieżka nawigacji) — wspólne dla wszystkich podstron.
+// Na etapie SEO z tych samych danych powstanie JSON-LD BreadcrumbList.
+interface Props {
+  items: readonly { label: string; href?: string }[];
+}
+
+const trail = [{ label: 'Strona główna', href: '/' }, ...Astro.props.items];
+---
+
+<nav class="crumbs" aria-label="Ścieżka nawigacji">
+  <ol>
+    {
+      trail.map((c, i) => (
+        <li>{c.href && i < trail.length - 1 ? <a href={c.href}>{c.label}</a> : <span aria-current="page">{c.label}</span>}</li>
+      ))
+    }
+  </ol>
+</nav>
+
+<style>
+  .crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0;
+    margin: 0 0 2rem;
+    padding: 0;
+    list-style: none;
+    font-size: var(--fs-small);
+    color: var(--c-muted);
+  }
+
+  .crumbs li + li::before {
+    content: '/';
+    margin-inline: 0.625rem;
+    color: #8d99a5;
+  }
+
+  .crumbs a {
+    font-weight: 600;
+    color: var(--c-heading);
+    text-decoration: none;
+  }
+
+  .crumbs a:hover {
+    text-decoration: underline;
+  }
+
+  /* długi tytuł wpisu w okruszkach nie rozpycha wiersza na telefonie */
+  .crumbs span[aria-current] {
+    display: inline-block;
+    vertical-align: bottom;
+    max-width: 40ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+</style>

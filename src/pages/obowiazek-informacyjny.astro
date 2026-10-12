@@ -1,8 +1,13 @@
 ---
 import LegalPage from '../components/LegalPage.astro';
-import { Content } from '../content/legal/obowiazek-informacyjny.md';
+import { Content, getHeadings } from '../content/legal/obowiazek-informacyjny.md';
 ---
 
-<LegalPage title="Obowiązek informacyjny" description="Informacja o przetwarzaniu danych osobowych przekazanych przez formularze w serwisie maxol.pl.">
+<LegalPage
+  title="Obowiązek informacyjny"
+  description="Informacja o przetwarzaniu danych osobowych przekazanych przez formularze w serwisie maxol.pl."
+  lead="Informacja o przetwarzaniu danych osobowych przekazanych przez formularze w serwisie maxol.pl."
+  headings={getHeadings()}
+>
   <Content />
 </LegalPage>

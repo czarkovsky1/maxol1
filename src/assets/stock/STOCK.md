@@ -26,3 +26,7 @@ Pobrane 2026-10-11. Docelowo warto zastąpić je prawdziwymi zdjęciami Maxol (m
 | oferta-smary.jpg | Frank R | https://unsplash.com/photos/a4pbk8TW47Q | free |
 | oferta-plyny.jpg | Sincerely Media | https://unsplash.com/photos/Wt4Hi25MT7g | free |
 | oferta-chemia.jpg | GoGoNano | https://unsplash.com/photos/Df9XCGX9Y2U | free |
+| dobor-bagnet.jpg | Tepalai Automobiliams | https://unsplash.com/photos/b5edWvATQDs | free |
+| blog-silnik-ciagnika.jpg | Wolfgang Rottmann | https://unsplash.com/photos/xnqvX5u-ZGQ | free |
+| blog-zima-sople.jpg | Lance Chang | https://unsplash.com/photos/K6CuH_XYkb8 | free |
+| blog-smarownice.jpg | Frantisek Duris | https://unsplash.com/photos/ByNRI-avGhs | free |

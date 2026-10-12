@@ -1,14 +1,20 @@
 ---
+// Marki i katalogi: hero ze spisem marek → partnerzy (ORLEN OIL, Castrol) z certyfikatami
+// → tabela marek w kategoriach → półka katalogów PDF (#katalogi) → Quator (#quator) → kontakt.
+// Docelowo marki z Sanity (dokument „Marka”), teraz z src/data/brands.ts.
 import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
-import BlockRenderer from '../components/BlockRenderer.astro';
+import PartnerPanels from '../components/brands/PartnerPanels.astro';
+import BrandMatrix from '../components/brands/BrandMatrix.astro';
+import CatalogShelf from '../components/brands/CatalogShelf.astro';
 import CtaBand from '../components/CtaBand.astro';
-import { homePage } from '../data/home';
+import { brands, brandCategories } from '../data/brands';
 import quatorImg from '../assets/legacy/content-quator.webp';
+import { plural } from '../utils/text';
 
-// Blok marek ze strony głównej z kotwicą #katalogi (link „Katalogi PDF” w nagłówku)
-const brands = homePage.blocks.filter((b) => b._type === 'brands').map((b) => ({ ...b, anchor: 'katalogi' }));
+const quator = brands.find((b) => b.slug === 'quator')!;
+const anchorFor = (slug: string) => (slug === 'quator' ? '#quator' : brands.find((b) => b.slug === slug)?.partner ? `#${slug}` : '#marki-w-kategoriach');
 ---
 
 <BaseLayout
@@ -17,30 +23,70 @@ const brands = homePage.blocks.filter((b) => b._type === 'brands').map((b) => ({
 >
   <PageHero
     title="Marki i katalogi"
-    lead="Oleje i środki smarne sprawdzonych producentów. Pobierz aktualne katalogi produktów dostępnych w sprzedaży."
+    lead={'Oleje, smary, płyny i chemia od sprawdzonych producentów. Jako autoryzowany dystrybutor ORLEN\u00A0OIL i\u00A0Castrol dostarczamy oryginalne produkty z pełną dokumentacją.'}
     crumbs={[{ label: 'Marki' }]}
+  >
+    <div class="hero-actions">
+      <a class="btn btn--primary" href="#katalogi">Pobierz katalogi PDF</a>
+      <a class="link-arrow" href="#marki-w-kategoriach">
+        Marki w kategoriach
+        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+          <path d="M9 3v11M4.5 10L9 14.5 13.5 10" fill="none" stroke="currentColor" stroke-width="2" />
+        </svg>
+      </a>
+    </div>
+
+    <nav slot="aside" class="bindex" aria-label="Marki w ofercie">
+      <ul role="list">
+        {
+          brands.map((b) => (
+            <li class:list={{ 'is-partner': b.partner }}>
+              <a href={anchorFor(b.slug)}>
+                <span class="bindex__name">{b.name}</span>
+                <span class="bindex__meta">{b.partner ? 'autoryzowany dystrybutor' : plural(brandCategories(b).length, ['kategoria', 'kategorie', 'kategorii'])}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </PageHero>
+
+  <PartnerPanels
+    heading={'Autoryzowany dystrybutor ORLEN\u00A0OIL i\u00A0Castrol'}
+    text="Kupujesz u źródła: oryginalne produkty z pełną dokumentacją techniczną i wsparciem w doborze. Certyfikaty dystrybutora możesz pobrać w PDF."
   />
 
-  <BlockRenderer blocks={brands} />
+  <BrandMatrix heading="Marki w kategoriach oferty" text="Sprawdź, w których kategoriach znajdziesz produkty poszczególnych marek. Nazwa kategorii prowadzi do jej opisu." />
 
-  <section class="section" id="quator" aria-labelledby="quator-heading">
-    <div class="container brand-feature">
-      <div class="brand-feature__media">
-        <Image src={quatorImg} alt="Olej Quator wlewany do silnika" widths={[480, 770]} sizes="(max-width: 900px) 100vw, 45vw" />
+  <CatalogShelf heading="Katalogi do pobrania" text="Aktualne katalogi producentów w PDF, z pełną gamą produktów. Ceny i dostępność potwierdzi przedstawiciel handlowy." />
+
+  <section class="section quator" id="quator" aria-labelledby="quator-heading">
+    <div class="container quator__grid">
+      <div class="quator__media">
+        <Image src={quatorImg} alt="Olej Quator wlewany do silnika" widths={[480, 770]} sizes="(max-width: 900px) 100vw, 50vw" />
       </div>
-      <div class="prose">
-        <h2 id="quator-heading">Oleje Quator</h2>
-        <p>
+      <div class="quator__copy">
+        <h2 id="quator-heading" class="quator__title">Oleje Quator</h2>
+        <p class="quator__lead">
           Quator to marka, która od lat dostarcza oleje smarujące o wysokiej wydajności, dostosowane do potrzeb wymagających użytkowników.
-          W ofercie Maxol znajdziesz szeroką gamę produktów Quator przeznaczonych zarówno dla motoryzacji, jak i przemysłu.
         </p>
-        <p>
-          Oleje tej marki minimalizują tarcie, chronią przed zużyciem i zapewniają długą żywotność kluczowych komponentów mechanicznych.
-          Zmniejszają też zużycie paliwa i emisję spalin, co czyni je ekologicznym wyborem.
-        </p>
-        <p>
-          <a href="https://maxol.pl/images/pdf/katalog-quator.pdf" target="_blank" rel="noopener">Pobierz katalog Quator (PDF, 3,2&nbsp;MB)</a>
-        </p>
+        <div class="prose quator__body">
+          <p>W ofercie Maxol znajdziesz szeroką gamę produktów Quator przeznaczonych zarówno dla motoryzacji, jak i przemysłu.</p>
+          <p>
+            Oleje tej marki minimalizują tarcie, chronią przed zużyciem i zapewniają długą żywotność kluczowych komponentów mechanicznych. Zmniejszają też
+            zużycie paliwa i emisję spalin, co czyni je ekologicznym wyborem.
+          </p>
+        </div>
+        <div class="quator__actions">
+          <a class="btn btn--ghost" href={quator.catalog!.href} target="_blank" rel="noopener">
+            <svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M10 3v10m0 0l-4-4m4 4l4-4M4 16h12" fill="none" stroke="currentColor" stroke-width="2.2" />
+            </svg>
+            Katalog Quator<span class="visually-hidden"> PDF, {quator.catalog!.size}</span>
+          </a>
+          <span class="quator__size">PDF, {quator.catalog!.size}</span>
+        </div>
       </div>
     </div>
   </section>
@@ -48,31 +94,119 @@ const brands = homePage.blocks.filter((b) => b._type === 'brands').map((b) => ({
   <CtaBand heading="Nie wiesz, którą markę wybrać?" text="Doradzimy produkt odpowiedni do Twoich pojazdów i maszyn, niezależnie od producenta." />
 </BaseLayout>
 
+<script>
+  import { initReveal } from '../scripts/reveal';
+  initReveal(['.pb__list > li', '.mtable', '.shelf__list > li', '.quator__media', '.quator__copy', '.cta__card']);
+</script>
+
 <style>
-  .brand-feature {
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 2rem;
+    margin-top: 2.25rem;
+  }
+
+  /* Spis marek w hero: duże nazwy jak „ściana marek”, partnerzy z żółtą kreską */
+  .bindex ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--c-line);
+  }
+
+  .bindex a {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.875rem 0;
+    border-bottom: 1px solid var(--c-line);
+    text-decoration: none;
+    transition: padding 0.25s var(--ease);
+  }
+
+  .bindex__name {
+    position: relative;
+    font-size: clamp(1.25rem, 1.05rem + 0.8vw, 1.75rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--c-heading);
+  }
+
+  .is-partner .bindex__name {
+    background: linear-gradient(var(--c-yellow), var(--c-yellow)) no-repeat 0 92% / 100% 0.22em;
+  }
+
+  .bindex__meta {
+    flex: none;
+    font-size: var(--fs-small);
+    color: var(--c-muted);
+  }
+
+  .bindex a:hover {
+    padding-left: 0.75rem;
+  }
+
+  /* Quator */
+  .quator__grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 2.5rem 5rem;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 2.5rem clamp(3rem, 2rem + 4vw, 6.5rem);
     align-items: center;
   }
 
-  .brand-feature__media {
-    aspect-ratio: 3 / 2;
-    overflow: hidden;
+  .quator {
+    scroll-margin-top: var(--header-h);
   }
 
-  .brand-feature__media img {
+  .quator__media {
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    background: var(--c-navy-900);
+  }
+
+  .quator__media :global(img) {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
 
-  .brand-feature .prose h2 {
-    margin-top: 0;
+  .quator__title {
+    font-size: var(--fs-h2);
+    color: var(--c-heading);
+  }
+
+  .quator__lead {
+    max-width: 40ch;
+    margin-top: 1.5rem;
+    font-size: clamp(1.1875rem, 1.05rem + 0.5vw, 1.4375rem);
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--c-heading);
+  }
+
+  .quator__body {
+    margin-top: 1.25rem;
+    color: var(--c-muted);
+  }
+
+  .quator__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+    margin-top: 2rem;
+  }
+
+  .quator__size {
+    font-size: var(--fs-small);
+    color: var(--c-muted);
   }
 
   @media (max-width: 900px) {
-    .brand-feature {
+    .quator__grid {
       grid-template-columns: 1fr;
     }
   }

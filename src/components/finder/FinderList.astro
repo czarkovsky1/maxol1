@@ -1,0 +1,156 @@
+---
+// Doborniki producentów jako spis: logo lub nazwa, opis i link zewnętrzny.
+// Cały wiersz jest linkiem (nowa karta); dane z src/data/brands.ts.
+import { Image } from 'astro:assets';
+import { brands } from '../../data/brands';
+
+interface Props {
+  heading: string;
+  text?: string;
+}
+
+const { heading, text } = Astro.props;
+const finders = brands.filter((b) => b.finder);
+---
+
+<section class="section finders" id="doborniki" aria-labelledby="finders-heading">
+  <div class="container">
+    <div class="finders__head">
+      <h2 id="finders-heading" class="finders__title">{heading}</h2>
+      {text && <p class="finders__text">{text}</p>}
+    </div>
+
+    <ul class="finders__list" role="list">
+      {
+        finders.map((b) => (
+          <li>
+            <a class="frow" href={b.finder!.href} target="_blank" rel="noopener">
+              <span class="frow__brand">
+                {b.logo ? <Image src={b.logo.src} alt={b.name} width={286} height={82} /> : <span class="frow__name">{b.name}</span>}
+              </span>
+              <span class="frow__text">{b.finder!.text}</span>
+              <span class="frow__go">
+                Otwórz dobornik
+                <svg width="16" height="16" viewBox="0 0 14 14" aria-hidden="true">
+                  <path d="M4 10L10 4M5 4h5v5" fill="none" stroke="currentColor" stroke-width="1.8" />
+                </svg>
+                <span class="visually-hidden"> {b.name} (otwiera się w nowej karcie)</span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <slot />
+  </div>
+</section>
+
+<style>
+  .finders {
+    scroll-margin-top: var(--header-h);
+  }
+
+  .finders__head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1.5rem 4rem;
+    align-items: end;
+    margin-bottom: clamp(2rem, 1.5rem + 2vw, 3rem);
+  }
+
+  .finders__title {
+    max-width: 16ch;
+    font-size: var(--fs-h2);
+    color: var(--c-heading);
+  }
+
+  .finders__text {
+    max-width: 52ch;
+    color: var(--c-muted);
+  }
+
+  .finders__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 2px solid var(--c-heading);
+  }
+
+  .frow {
+    position: relative;
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr) auto;
+    gap: 1rem clamp(1.5rem, 1rem + 3vw, 4rem);
+    align-items: center;
+    padding: 1.5rem 1rem 1.5rem 0;
+    border-bottom: 1px solid var(--c-line);
+    text-decoration: none;
+    color: inherit;
+    transition:
+      background-color 0.25s var(--ease),
+      padding 0.25s var(--ease);
+  }
+
+  .frow:hover {
+    padding-left: 1.25rem;
+    background: var(--c-bg-alt);
+  }
+
+  .frow__brand {
+    display: flex;
+    align-items: center;
+    min-height: 56px;
+  }
+
+  .frow__brand :global(img) {
+    width: 160px;
+    height: auto;
+  }
+
+  .frow__name {
+    font-size: clamp(1.5rem, 1.25rem + 1vw, 2rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--c-heading);
+  }
+
+  .frow__text {
+    max-width: 60ch;
+    color: var(--c-muted);
+  }
+
+  .frow__go {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    white-space: nowrap;
+    color: var(--c-heading);
+  }
+
+  .frow__go svg {
+    transition: transform 0.2s var(--ease);
+  }
+
+  .frow:hover .frow__go svg {
+    transform: translate(2px, -2px);
+  }
+
+  @media (max-width: 860px) {
+    .finders__head {
+      grid-template-columns: 1fr;
+    }
+
+    .frow {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+      padding-right: 0;
+    }
+
+    .frow:hover {
+      padding-left: 0;
+      background: none;
+    }
+  }
+</style>

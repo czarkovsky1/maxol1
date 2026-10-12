@@ -1,0 +1,353 @@
+---
+// „Co sprawdzić przed wyborem oleju”: trzy oznaczenia z instrukcji pojazdu
+// objaśnione na przykładowej etykiecie butelki. Najechanie / fokus / kliknięcie
+// na punkt podświetla jego miejsce na etykiecie; gdy sekcja jest na ekranie,
+// punkty zmieniają się same (bez tego przy „ogranicz ruch”).
+// Wartości na etykiecie są przykładowe (typowy zestaw dla oleju 5W-30 Low SAPS).
+
+interface Item {
+  id: string;
+  title: string;
+  example: string;
+  text: string;
+}
+
+interface Props {
+  heading: string;
+  text?: string;
+  items: readonly Item[];
+}
+
+const { heading, text, items } = Astro.props;
+---
+
+<section class="section section--alt guide" aria-labelledby="guide-heading" data-guide>
+  <div class="container guide__grid">
+    <div class="guide__copy">
+      <h2 id="guide-heading" class="guide__title">{heading}</h2>
+      {text && <p class="guide__text">{text}</p>}
+
+      <ol class="guide__list" role="list">
+        {
+          items.map((item, i) => (
+            <li>
+              <button class:list={['gitem', { 'is-active': i === 0 }]} type="button" data-guide-item={item.id} aria-pressed={i === 0 ? 'true' : 'false'}>
+                <span class="gitem__num" aria-hidden="true">
+                  {i + 1}
+                </span>
+                <span class="gitem__body">
+                  <span class="gitem__title">
+                    {item.title} <span class="gitem__example">{item.example}</span>
+                  </span>
+                  <span class="gitem__text">{item.text}</span>
+                </span>
+              </button>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+
+    <figure class="bottle-wrap">
+      <svg
+        class="bottle"
+        viewBox="0 0 360 500"
+        role="img"
+        aria-label="Przykładowa etykieta oleju silnikowego: lepkość SAE 5W-30, normy ACEA C3 i API SP, aprobaty VW 504 00 i MB 229.51"
+      >
+        <!-- korek i szyjka -->
+        <rect x="62" y="8" width="78" height="44" rx="6" fill="#062b49"></rect>
+        <rect x="62" y="40" width="78" height="6" fill="#fad900"></rect>
+        <rect x="74" y="50" width="54" height="22" fill="#0a4a7c"></rect>
+        <!-- korpus butelki z uchwytem -->
+        <path d="M44 72h250c22 0 40 18 40 40v340c0 22-18 40-40 40H44c-22 0-36-18-36-40V112c0-22 14-40 36-40z" fill="#0a4a7c"></path>
+        <rect x="232" y="92" width="74" height="62" rx="22" fill="#f2f4f6"></rect>
+        <!-- odblask -->
+        <rect x="24" y="110" width="8" height="330" rx="4" fill="#ffffff" opacity="0.12"></rect>
+
+        <!-- etykieta -->
+        <rect x="40" y="176" width="268" height="284" rx="6" fill="#ffffff"></rect>
+        <rect x="40" y="176" width="268" height="44" rx="6" fill="#fad900"></rect>
+        <rect x="40" y="206" width="268" height="14" fill="#fad900"></rect>
+        <text x="58" y="204" class="t-band">OLEJ SILNIKOWY</text>
+        <path d="M282 186c0 0-9 10.5-9 15.5a9 9 0 0 0 18 0c0-5-9-15.5-9-15.5z" fill="#062b49"></path>
+
+        <g class="spot" data-guide-spot="lepkosc">
+          <rect class="spot__ring" x="50" y="232" width="248" height="92" rx="6"></rect>
+          <text x="174" y="294" text-anchor="middle" class="t-visc">5W-30</text>
+          <text x="174" y="314" text-anchor="middle" class="t-sub">w pełni syntetyczny</text>
+        </g>
+
+        <line x1="58" y1="336" x2="290" y2="336" stroke="#d9dee3" stroke-width="2"></line>
+
+        <g class="spot" data-guide-spot="normy">
+          <rect class="spot__ring" x="50" y="346" width="248" height="46" rx="6"></rect>
+          <text x="174" y="376" text-anchor="middle" class="t-spec">ACEA C3 · API SP</text>
+        </g>
+
+        <g class="spot" data-guide-spot="aprobaty">
+          <rect class="spot__ring" x="50" y="398" width="248" height="50" rx="6"></rect>
+          <text x="174" y="420" text-anchor="middle" class="t-appr">Aprobaty:</text>
+          <text x="174" y="439" text-anchor="middle" class="t-appr">VW 504 00 · MB 229.51</text>
+        </g>
+      </svg>
+      <figcaption class="bottle-wrap__cap">Przykładowe oznaczenia na etykiecie oleju silnikowego</figcaption>
+    </figure>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-guide]').forEach((root) => {
+    const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-guide-item]')];
+    const spots = [...root.querySelectorAll<SVGGElement>('[data-guide-spot]')];
+    let index = 0;
+    let timer: number | undefined;
+    let inView = false;
+    let hovered = false;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const show = (i: number) => {
+      index = i;
+      const id = buttons[i].dataset.guideItem;
+      buttons.forEach((b, j) => {
+        b.classList.toggle('is-active', j === i);
+        b.setAttribute('aria-pressed', String(j === i));
+      });
+      spots.forEach((s) => s.classList.toggle('is-active', s.dataset.guideSpot === id));
+    };
+
+    const stop = () => window.clearInterval(timer);
+    const start = () => {
+      stop();
+      if (reduce || !inView || hovered) return;
+      timer = window.setInterval(() => show((index + 1) % buttons.length), 4200);
+    };
+
+    buttons.forEach((b, i) => {
+      b.addEventListener('click', () => {
+        show(i);
+        start();
+      });
+      b.addEventListener('mouseenter', () => show(i));
+      b.addEventListener('focus', () => show(i));
+    });
+
+    root.addEventListener('mouseenter', () => {
+      hovered = true;
+      stop();
+    });
+    root.addEventListener('mouseleave', () => {
+      hovered = false;
+      start();
+    });
+
+    new IntersectionObserver(([e]) => {
+      inView = e.isIntersecting;
+      inView ? start() : stop();
+    }, { threshold: 0.4 }).observe(root);
+
+    show(0);
+  });
+</script>
+
+<style>
+  .guide__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 3rem clamp(3rem, 2rem + 4vw, 6.5rem);
+    align-items: center;
+  }
+
+  .guide__title {
+    max-width: 18ch;
+    font-size: var(--fs-h2);
+    color: var(--c-heading);
+  }
+
+  .guide__text {
+    max-width: 52ch;
+    margin-top: 1.25rem;
+    color: var(--c-muted);
+  }
+
+  .guide__list {
+    display: grid;
+    gap: 0.75rem;
+    margin: 2.25rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .gitem {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1.25rem;
+    width: 100%;
+    padding: 1.25rem 1.5rem;
+    border: 0;
+    border-left: 4px solid transparent;
+    background: transparent;
+    font: inherit;
+    text-align: left;
+    color: inherit;
+    cursor: pointer;
+    transition:
+      background-color 0.25s var(--ease),
+      border-color 0.25s var(--ease);
+  }
+
+  .gitem:hover {
+    background: rgb(255 255 255 / 0.6);
+  }
+
+  .gitem.is-active {
+    border-left-color: var(--c-yellow);
+    background: #fff;
+  }
+
+  .gitem__num {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 2px solid var(--c-heading);
+    border-radius: 50%;
+    font-weight: 800;
+    color: var(--c-heading);
+    transition:
+      background-color 0.25s var(--ease),
+      color 0.25s var(--ease);
+  }
+
+  .gitem.is-active .gitem__num {
+    background: var(--c-heading);
+    color: #fff;
+  }
+
+  .gitem__body {
+    display: grid;
+    gap: 0.375rem;
+  }
+
+  .gitem__title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    line-height: 1.25;
+    color: var(--c-heading);
+  }
+
+  .gitem__example {
+    font-weight: 600;
+    color: var(--c-muted);
+  }
+
+  .gitem__text {
+    max-width: 52ch;
+    color: var(--c-muted);
+  }
+
+  .gitem:focus-visible {
+    outline: 3px solid var(--c-heading);
+    outline-offset: 2px;
+  }
+
+  /* Butelka */
+  .bottle-wrap {
+    margin: 0;
+    justify-self: center;
+    width: min(100%, 420px);
+  }
+
+  .bottle {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 24px 32px rgb(6 43 73 / 0.22));
+  }
+
+  .bottle-wrap__cap {
+    margin-top: 1rem;
+    font-size: var(--fs-small);
+    text-align: center;
+    color: var(--c-muted);
+  }
+
+  .t-band {
+    font: 800 15px var(--font);
+    letter-spacing: 0.08em;
+    fill: #062b49;
+  }
+
+  .t-visc {
+    font: 800 64px var(--font);
+    letter-spacing: -0.03em;
+    fill: #062b49;
+  }
+
+  .t-sub {
+    font: 600 14px var(--font);
+    fill: #4a5a68;
+  }
+
+  .t-spec {
+    font: 800 19px var(--font);
+    fill: #062b49;
+  }
+
+  .t-appr {
+    font: 600 14px var(--font);
+    fill: #4a5a68;
+  }
+
+  .spot__ring {
+    fill: rgb(250 217 0 / 0);
+    stroke: #e6c700;
+    stroke-width: 3;
+    opacity: 0;
+    transition:
+      opacity 0.3s var(--ease),
+      fill 0.3s var(--ease);
+  }
+
+  .spot.is-active .spot__ring {
+    opacity: 1;
+    fill: rgb(250 217 0 / 0.16);
+  }
+
+  /* Telefon: tytuł i wstęp → butelka → lista (podświetlenie widać przy dotknięciu punktu) */
+  @media (max-width: 900px) {
+    .guide__grid {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .guide__copy {
+      display: contents;
+    }
+
+    .guide__title {
+      order: 1;
+    }
+
+    .guide__text {
+      order: 2;
+    }
+
+    .bottle-wrap {
+      order: 3;
+      width: min(100%, 280px);
+      margin-top: 2rem;
+    }
+
+    .guide__list {
+      order: 4;
+      margin-top: 2rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .gitem {
+      gap: 0.875rem;
+      padding: 1rem;
+    }
+  }
+</style>
